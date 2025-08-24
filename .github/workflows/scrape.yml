@@ -124,32 +124,35 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-          # 1) Asegura que estamos sincronizados con remoto ANTES de preparar el commit
-          git fetch origin main
-          # intenta fast-forward; si no es posible, hace merge normal
-          if ! git merge --ff-only origin/main; then
-            git merge --no-edit origin/main || true
-          fi
-
-          # 2) Stage de salidas
+          # Stage de salidas
           git add docs/resultados.json docs/status.json docs/.nojekyll \
                   resultados_combinados.json scraper/data/resultados_combinados.json || true
 
-          # 3) Commit solo si hay cambios
+          # Commit solo si hay cambios
           if git diff --cached --quiet; then
             echo "Nada que commitear"
             exit 0
           fi
-
           git commit -m "chore: actualizar feed ($(date -u +'%Y-%m-%dT%H:%M:%SZ'))"
 
-          # 4) Push; si el remoto avanzó entre el merge y el push, intenta una vez más con lease
-          if ! git push origin HEAD:main; then
+          # --- Rama local real y rebase sobre origin/main (evita detached HEAD y non-fast-forward) ---
+          git fetch origin main
+          git checkout -B auto-pages   # crea/actualiza rama local apuntando al commit recién hecho
+
+          # Preferimos rebase; si falla, hacemos merge sin editar mensaje
+          if ! git rebase origin/main; then
+            git rebase --abort || true
+            git merge --no-edit origin/main || true
+          fi
+
+          # Push con lease (seguro). Si otro run movió el remoto entre rebase y push, reintentamos una vez.
+          if ! git push --force-with-lease origin auto-pages:main; then
             git fetch origin main
-            if ! git merge --ff-only origin/main; then
+            if ! git rebase origin/main; then
+              git rebase --abort || true
               git merge --no-edit origin/main || true
             fi
-            git push --force-with-lease origin HEAD:main
+            git push --force-with-lease origin auto-pages:main
           fi
 
       - name: Marcar error en status.json (si falla)
