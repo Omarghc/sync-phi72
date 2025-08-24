@@ -45,7 +45,7 @@ jobs:
           set -e
           xvfb-run -a python scraper/main.py   # genera ./resultados_combinados.json
 
-      - name: Normalizar directamente a docs/ (sin tmp)
+      - name: Normalizar a docs/ y desactivar Jekyll
         run: |
           python - << 'PY'
           import json, pathlib, datetime
@@ -61,24 +61,26 @@ jobs:
               nums = []
               for n in (it.get("numeros") or []):
                   s = str(n).strip()
-                  try:
-                      nums.append(int(s))
-                  except:
+                  try: nums.append(int(s))
+                  except: 
                       if s: nums.append(s)
               if lot and fecha and nums:
                   norm.append({"loteria": lot, "numeros": nums, "fecha": fecha})
           payload = {"generado": datetime.datetime.utcnow().isoformat()+"Z", "resultados": norm}
-          out = pathlib.Path("docs/resultados.json"); out.parent.mkdir(parents=True, exist_ok=True)
-          out.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-          pathlib.Path("docs/status.json").write_text(
-            json.dumps({"ok": True, "message": "Scrape OK", "generated_at_utc": payload["generado"]},
-              ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+          outdir = pathlib.Path("docs"); outdir.mkdir(parents=True, exist_ok=True)
+          (outdir / "resultados.json").write_text(
+              json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+          (outdir / "status.json").write_text(
+              json.dumps({"ok": True, "message": "Scrape OK", "generated_at_utc": payload["generado"]},
+                         ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+          # <<<<<< clave: desactivar Jekyll
+          (outdir / ".nojekyll").write_text("", encoding="utf-8")
           PY
 
-      - name: Commit & push si hubo cambios (JSON y estado)
+      - name: Commit & push si hubo cambios (JSON, status y .nojekyll)
         run: |
           changes=0
-          git add docs/resultados.json docs/status.json resultados_combinados.json || true
+          git add docs/resultados.json docs/status.json docs/.nojekyll resultados_combinados.json || true
           git diff --cached --quiet || changes=1
           if [ "$changes" -eq 1 ]; then
             git config user.name "github-actions[bot]"
@@ -94,8 +96,9 @@ jobs:
         run: |
           python - << 'PY'
           import json, datetime, pathlib
-          pathlib.Path("docs").mkdir(parents=True, exist_ok=True)
-          pathlib.Path("docs/status.json").write_text(
+          outdir = pathlib.Path("docs"); outdir.mkdir(parents=True, exist_ok=True)
+          (outdir / ".nojekyll").write_text("", encoding="utf-8")
+          (outdir / "status.json").write_text(
             json.dumps({"ok": False, "message": "Fallo en scraper/normalización",
                         "generated_at_utc": datetime.datetime.utcnow().isoformat()+"Z"},
               ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
