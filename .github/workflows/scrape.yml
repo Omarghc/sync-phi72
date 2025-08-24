@@ -119,28 +119,38 @@ jobs:
         run: |
           set -euxo pipefail
 
+          # Config git
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+          # 1) Asegura que estamos sincronizados con remoto ANTES de preparar el commit
+          git fetch origin main
+          # intenta fast-forward; si no es posible, hace merge normal
+          if ! git merge --ff-only origin/main; then
+            git merge --no-edit origin/main || true
+          fi
+
+          # 2) Stage de salidas
           git add docs/resultados.json docs/status.json docs/.nojekyll \
                   resultados_combinados.json scraper/data/resultados_combinados.json || true
 
+          # 3) Commit solo si hay cambios
           if git diff --cached --quiet; then
             echo "Nada que commitear"
             exit 0
           fi
 
-          git config user.name  "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
-
           git commit -m "chore: actualizar feed ($(date -u +'%Y-%m-%dT%H:%M:%SZ'))"
 
-          # Evitar non-fast-forward: sincroniza con remoto antes de empujar
-          git fetch origin main
-          if ! git rebase origin/main; then
-            git rebase --abort || true
-            git pull --no-rebase --strategy-option ours origin main || true
+          # 4) Push; si el remoto avanzó entre el merge y el push, intenta una vez más con lease
+          if ! git push origin HEAD:main; then
+            git fetch origin main
+            if ! git merge --ff-only origin/main; then
+              git merge --no-edit origin/main || true
+            fi
+            git push --force-with-lease origin HEAD:main
           fi
-
-          git push origin HEAD:main
 
       - name: Marcar error en status.json (si falla)
         if: failure()
