@@ -15,91 +15,113 @@ permissions:
 jobs:
   scrape:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        with: { fetch-depth: 0 }
 
-      - name: Setup Python
+      - name: Setup Python 3.11
         uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+        with: { python-version: "3.11" }
 
-      - name: Instalar dependencias Python
+      - name: Instalar dependencias (incluye playwright)
         run: |
           pip install --upgrade pip
+          pip install playwright beautifulsoup4 requests google-auth google-auth-httplib2 google-auth-oauthlib
           if [ -f scraper/requirements.txt ]; then pip install -r scraper/requirements.txt; fi
 
       - name: Instalar Playwright + Chromium
         run: |
           python -m playwright install --with-deps chromium
 
-      - name: Ejecutar tu scraper (Playwright con Xvfb) + FCM por secret
+      - name: Ejecutar scraper (xvfb) con credenciales por secret
         env:
           TZ: "America/Santo_Domingo"
           FCM_SERVICE_ACCOUNT_JSON: ${{ secrets.FCM_SERVICE_ACCOUNT_JSON }}
         run: |
-          set -e
-          xvfb-run -a python scraper/main.py   # genera ./resultados_combinados.json
+          set -euxo pipefail
+          xvfb-run -a python scraper/main.py
+          ls -la
 
-      - name: Normalizar a docs/ y desactivar Jekyll
+      - name: Publicar HOY desde TU JSON ORIGINAL (sin modificar datos) y desactivar Jekyll
         run: |
           python - << 'PY'
-          import json, pathlib, datetime
-          src = pathlib.Path("resultados_combinados.json")
-          if not src.exists():
-              raise SystemExit("No existe resultados_combinados.json; tu scraper no generó salida.")
-          raw = json.loads(src.read_text(encoding="utf-8"))
-          resultados = raw if isinstance(raw, list) else raw.get("resultados", [])
-          norm = []
-          for it in resultados:
-              lot = str(it.get("loteria","")).strip()
-              fecha = str(it.get("fecha","")).strip()
-              nums = []
-              for n in (it.get("numeros") or []):
-                  s = str(n).strip()
-                  try: nums.append(int(s))
-                  except: 
-                      if s: nums.append(s)
-              if lot and fecha and nums:
-                  norm.append({"loteria": lot, "numeros": nums, "fecha": fecha})
-          payload = {"generado": datetime.datetime.utcnow().isoformat()+"Z", "resultados": norm}
+          import json, pathlib, datetime, zoneinfo, os, shutil
+          TZ = zoneinfo.ZoneInfo("America/Santo_Domingo")
+          def hoy_str(): return datetime.datetime.now(TZ).date().isoformat()
+
+          # 1) Localiza tu JSON original del scraper
+          root_json = pathlib.Path("resultados_combinados.json")
+          orig_json = pathlib.Path("scraper/data/resultados_combinados.json")
+          src = None
+          if orig_json.exists() and root_json.exists():
+              # el más reciente por mtime
+              src = orig_json if orig_json.stat().st_mtime >= root_json.stat().st_mtime else root_json
+          elif orig_json.exists():
+              src = orig_json
+          elif root_json.exists():
+              src = root_json
+
           outdir = pathlib.Path("docs"); outdir.mkdir(parents=True, exist_ok=True)
-          (outdir / "resultados.json").write_text(
-              json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-          (outdir / "status.json").write_text(
-              json.dumps({"ok": True, "message": "Scrape OK", "generated_at_utc": payload["generado"]},
-                         ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-          # <<<<<< clave: desactivar Jekyll
           (outdir / ".nojekyll").write_text("", encoding="utf-8")
+
+          if not src:
+              # si no hay fuente, publica vacío con mensaje
+              payload = {"generado": datetime.datetime.utcnow().isoformat()+"Z", "resultados":[]}
+              (outdir/"resultados.json").write_text(json.dumps(payload, separators=(",",":")), encoding="utf-8")
+              (outdir/"status.json").write_text(json.dumps({
+                  "ok": False, "message": "Sin datos del scraper", 
+                  "generated_at_utc": payload["generado"]
+              }, separators=(",",":")), encoding="utf-8")
+              raise SystemExit(0)
+
+          # 2) Mantén sincronizado el histórico en ambas rutas (por si el scraper escribió en una sola)
+          data = json.loads(src.read_text(encoding="utf-8"))
+          for target in (root_json, orig_json):
+              target.parent.mkdir(parents=True, exist_ok=True)
+              target.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+
+          # 3) Publica SOLO HOY a docs/resultados.json (passthrough de campos, sin transformar)
+          items = data if isinstance(data, list) else data.get("resultados", [])
+          hoy = hoy_str()
+          solo_hoy = [ 
+              {k: v for k, v in it.items() if k in ("loteria","numeros","fecha")} 
+              for it in items if str(it.get("fecha","")) == hoy
+          ]
+
+          payload = {"generado": datetime.datetime.utcnow().isoformat()+"Z", "resultados": solo_hoy}
+          (outdir / "resultados.json").write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+          (outdir / "status.json").write_text(json.dumps({
+              "ok": True, "message": f"HOY {hoy}: {len(solo_hoy)} resultados",
+              "generated_at_utc": payload["generado"]
+          }, separators=(",",":")), encoding="utf-8")
+          print(f"Publicados HOY {hoy}: {len(solo_hoy)}")
           PY
 
-      - name: Commit & push si hubo cambios (JSON, status y .nojekyll)
+      - name: Subir artefactos de depuración (por si algo sale raro)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-scrape
+          path: |
+            resultados_combinados.json
+            scraper/data/resultados_combinados.json
+            debug_*.html
+          if-no-files-found: ignore
+
+      - name: Commit & push si hubo cambios
         run: |
           changes=0
-          git add docs/resultados.json docs/status.json docs/.nojekyll resultados_combinados.json || true
+          git add docs/resultados.json docs/status.json docs/.nojekyll \
+                  resultados_combinados.json scraper/data/resultados_combinados.json || true
           git diff --cached --quiet || changes=1
           if [ "$changes" -eq 1 ]; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git commit -m "chore: actualizar feed ($(date -u +'%Y-%m-%dT%H:%M:%SZ'))"
+            git commit -m "chore: publicar HOY desde JSON original ($(date -u +'%Y-%m-%dT%H:%M:%SZ'))"
             git push
           else
             echo "Nada que commitear"
           fi
-
-      - name: Marcar error en status.json (si falla)
-        if: failure()
-        run: |
-          python - << 'PY'
-          import json, datetime, pathlib
-          outdir = pathlib.Path("docs"); outdir.mkdir(parents=True, exist_ok=True)
-          (outdir / ".nojekyll").write_text("", encoding="utf-8")
-          (outdir / "status.json").write_text(
-            json.dumps({"ok": False, "message": "Fallo en scraper/normalización",
-                        "generated_at_utc": datetime.datetime.utcnow().isoformat()+"Z"},
-              ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-          PY
