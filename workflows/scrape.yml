@@ -1,0 +1,101 @@
+name: Actualizar resultados lotería
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: scraper-production
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias Python
+        run: |
+          pip install --upgrade pip
+          if [ -f scraper/requirements.txt ]; then pip install -r scraper/requirements.txt; fi
+
+      - name: Instalar Playwright + Chromium
+        run: |
+          python -m playwright install --with-deps chromium
+
+      - name: Ejecutar tu scraper (Playwright con Xvfb) + FCM por secret
+        env:
+          TZ: "America/Santo_Domingo"
+          FCM_SERVICE_ACCOUNT_JSON: ${{ secrets.FCM_SERVICE_ACCOUNT_JSON }}
+        run: |
+          set -e
+          xvfb-run -a python scraper/main.py   # genera ./resultados_combinados.json
+
+      - name: Normalizar a docs/resultados.json (para GitHub Pages)
+        run: |
+          python - << 'PY'
+          import json, pathlib, datetime
+          src = pathlib.Path("resultados_combinados.json")
+          if not src.exists():
+              raise SystemExit("No existe resultados_combinados.json; tu scraper no generó salida.")
+          raw = json.loads(src.read_text(encoding="utf-8"))
+          resultados = raw if isinstance(raw, list) else raw.get("resultados", [])
+          norm = []
+          for it in resultados:
+              lot = str(it.get("loteria","")).strip()
+              fecha = str(it.get("fecha","")).strip()
+              nums = []
+              for n in (it.get("numeros") or []):
+                  s = str(n).strip()
+                  try: nums.append(int(s))
+                  except: 
+                      if s: nums.append(s)
+              if lot and fecha and nums:
+                  norm.append({"loteria": lot, "numeros": nums, "fecha": fecha})
+          payload = {"generado": datetime.datetime.utcnow().isoformat()+"Z", "resultados": norm}
+          out = pathlib.Path("docs/resultados.json"); out.parent.mkdir(parents=True, exist_ok=True)
+          out.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+          pathlib.Path("docs/status.json").write_text(
+            json.dumps({"ok": True, "message": "Scrape OK", "generated_at_utc": payload["generado"]},
+              ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+          PY
+
+      - name: Commit & push si hubo cambios (JSON y estado)
+        run: |
+          changes=0
+          git add docs/resultados.json docs/status.json resultados_combinados.json || true
+          git diff --cached --quiet || changes=1
+          if [ "$changes" -eq 1 ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "chore: actualizar feed ($(date -u +'%Y-%m-%dT%H:%M:%SZ'))"
+            git push
+          else
+            echo "Nada que commitear"
+          fi
+
+      - name: Marcar error en status.json (si falla)
+        if: failure()
+        run: |
+          python - << 'PY'
+          import json, datetime, pathlib
+          pathlib.Path("docs").mkdir(parents=True, exist_ok=True)
+          pathlib.Path("docs/status.json").write_text(
+            json.dumps({"ok": False, "message": "Fallo en scraper/normalización",
+                        "generated_at_utc": datetime.datetime.utcnow().isoformat()+"Z"},
+              ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+          PY
