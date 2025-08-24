@@ -1,0 +1,102 @@
+name: Actualizar resultados lotería
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"   # cada 10 min
+  workflow_dispatch:
+
+concurrency:
+  group: scraper-production
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias
+        run: |
+          pip install --upgrade pip
+          if [ -f scraper/requirements.txt ]; then pip install -r scraper/requirements.txt; fi
+
+      - name: Ejecutar scraper
+        env:
+          TZ: "America/Santo_Domingo"
+        run: |
+          set -e
+          python scraper/main.py --out public/resultados.tmp.json
+
+      - name: Validar JSON y minificar
+        run: |
+          python - << 'PY'
+          import json, pathlib
+          p = pathlib.Path("public/resultados.tmp.json")
+          data = json.loads(p.read_text(encoding="utf-8"))
+          assert "resultados" in data and isinstance(data["resultados"], list)
+          p.write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+          PY
+
+      - name: Escribir status y reemplazar si cambió
+        run: |
+          python - << 'PY'
+          import json, datetime, os, pathlib
+          os.makedirs("public", exist_ok=True)
+          status = {
+            "ok": True,
+            "message": "Scrape exitoso",
+            "generated_at_utc": datetime.datetime.utcnow().isoformat()+"Z"
+          }
+          pathlib.Path("public/status.json").write_text(
+            json.dumps(status, ensure_ascii=False, separators=(",", ":")), encoding="utf-8"
+          )
+          PY
+
+          if [ ! -f public/resultados.json ]; then
+            mv public/resultados.tmp.json public/resultados.json
+            echo "first_write=1" >> $GITHUB_ENV
+          elif ! diff -q public/resultados.tmp.json public/resultados.json > /dev/null; then
+            mv public/resultados.tmp.json public/resultados.json
+            echo "changed=1" >> $GITHUB_ENV
+          else
+            rm public/resultados.tmp.json
+            echo "Sin cambios en resultados.json"
+          fi
+
+      - name: Commit & push si cambió
+        if: env.first_write == '1' || env.changed == '1'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/resultados.json public/status.json
+          git commit -m "chore: actualizar resultados ($(date -u +'%Y-%m-%dT%H:%M:%SZ'))"
+          git push
+
+      - name: Marcar error en status.json (si falla)
+        if: failure()
+        run: |
+          python - << 'PY'
+          import json, datetime, os, pathlib
+          os.makedirs("public", exist_ok=True)
+          status = {
+            "ok": False,
+            "message": "Fallo en scraper o validación",
+            "generated_at_utc": datetime.datetime.utcnow().isoformat()+"Z"
+          }
+          pathlib.Path("public/status.json").write_text(
+            json.dumps(status, ensure_ascii=False, separators=(",", ":")), encoding="utf-8"
+          )
+          PY
