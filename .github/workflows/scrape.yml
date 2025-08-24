@@ -2,7 +2,7 @@ name: Actualizar resultados lotería
 
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "*/10 * * * *"          # cada 10 minutos
   workflow_dispatch:
 
 concurrency:
@@ -20,23 +20,28 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
+        with:
+          fetch-depth: 0
 
       - name: Setup Python 3.11
         uses: actions/setup-python@v5
-        with: { python-version: "3.11" }
+        with:
+          python-version: "3.11"
 
-      - name: Instalar dependencias (incluye playwright)
+      - name: Instalar dependencias Python (incluye Playwright)
         run: |
+          set -euxo pipefail
+          python -V
           pip install --upgrade pip
           pip install playwright beautifulsoup4 requests google-auth google-auth-httplib2 google-auth-oauthlib
           if [ -f scraper/requirements.txt ]; then pip install -r scraper/requirements.txt; fi
 
       - name: Instalar Playwright + Chromium
         run: |
+          set -euxo pipefail
           python -m playwright install --with-deps chromium
 
-      - name: Ejecutar scraper (xvfb) con credenciales por secret
+      - name: Ejecutar tu scraper (Playwright con Xvfb) + FCM por secret
         env:
           TZ: "America/Santo_Domingo"
           FCM_SERVICE_ACCOUNT_JSON: ${{ secrets.FCM_SERVICE_ACCOUNT_JSON }}
@@ -44,20 +49,19 @@ jobs:
           set -euxo pipefail
           xvfb-run -a python scraper/main.py
           ls -la
+          echo "Scraper terminado."
 
       - name: Publicar HOY desde TU JSON ORIGINAL (sin modificar datos) y desactivar Jekyll
         run: |
           python - << 'PY'
-          import json, pathlib, datetime, zoneinfo, os, shutil
+          import json, pathlib, datetime, zoneinfo
           TZ = zoneinfo.ZoneInfo("America/Santo_Domingo")
           def hoy_str(): return datetime.datetime.now(TZ).date().isoformat()
 
-          # 1) Localiza tu JSON original del scraper
           root_json = pathlib.Path("resultados_combinados.json")
           orig_json = pathlib.Path("scraper/data/resultados_combinados.json")
           src = None
           if orig_json.exists() and root_json.exists():
-              # el más reciente por mtime
               src = orig_json if orig_json.stat().st_mtime >= root_json.stat().st_mtime else root_json
           elif orig_json.exists():
               src = orig_json
@@ -68,32 +72,32 @@ jobs:
           (outdir / ".nojekyll").write_text("", encoding="utf-8")
 
           if not src:
-              # si no hay fuente, publica vacío con mensaje
               payload = {"generado": datetime.datetime.utcnow().isoformat()+"Z", "resultados":[]}
               (outdir/"resultados.json").write_text(json.dumps(payload, separators=(",",":")), encoding="utf-8")
               (outdir/"status.json").write_text(json.dumps({
-                  "ok": False, "message": "Sin datos del scraper", 
+                  "ok": False, "message": "Sin datos del scraper",
                   "generated_at_utc": payload["generado"]
               }, separators=(",",":")), encoding="utf-8")
+              print("No se encontró resultados_combinados.json")
               raise SystemExit(0)
 
-          # 2) Mantén sincronizado el histórico en ambas rutas (por si el scraper escribió en una sola)
+          # Sincroniza histórico en ambas rutas (por si tu script solo escribió en una)
           data = json.loads(src.read_text(encoding="utf-8"))
           for target in (root_json, orig_json):
               target.parent.mkdir(parents=True, exist_ok=True)
               target.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
-          # 3) Publica SOLO HOY a docs/resultados.json (passthrough de campos, sin transformar)
+          # Publica SOLO HOY tal cual (sin tocar nombres ni números)
           items = data if isinstance(data, list) else data.get("resultados", [])
           hoy = hoy_str()
-          solo_hoy = [ 
-              {k: v for k, v in it.items() if k in ("loteria","numeros","fecha")} 
+          solo_hoy = [
+              {k: v for k, v in it.items() if k in ("loteria","numeros","fecha")}
               for it in items if str(it.get("fecha","")) == hoy
           ]
 
           payload = {"generado": datetime.datetime.utcnow().isoformat()+"Z", "resultados": solo_hoy}
-          (outdir / "resultados.json").write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-          (outdir / "status.json").write_text(json.dumps({
+          (outdir/"resultados.json").write_text(json.dumps(payload, ensure_ascii=False, separators=(",",":")), encoding="utf-8")
+          (outdir/"status.json").write_text(json.dumps({
               "ok": True, "message": f"HOY {hoy}: {len(solo_hoy)} resultados",
               "generated_at_utc": payload["generado"]
           }, separators=(",",":")), encoding="utf-8")
@@ -111,17 +115,43 @@ jobs:
             debug_*.html
           if-no-files-found: ignore
 
-      - name: Commit & push si hubo cambios
+      - name: Commit & push si hubo cambios (JSON, status y .nojekyll)
         run: |
-          changes=0
+          set -euxo pipefail
+
           git add docs/resultados.json docs/status.json docs/.nojekyll \
                   resultados_combinados.json scraper/data/resultados_combinados.json || true
-          git diff --cached --quiet || changes=1
-          if [ "$changes" -eq 1 ]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git commit -m "chore: publicar HOY desde JSON original ($(date -u +'%Y-%m-%dT%H:%M:%SZ'))"
-            git push
-          else
+
+          if git diff --cached --quiet; then
             echo "Nada que commitear"
+            exit 0
           fi
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+          git commit -m "chore: actualizar feed ($(date -u +'%Y-%m-%dT%H:%M:%SZ'))"
+
+          # Evitar non-fast-forward: sincroniza con remoto antes de empujar
+          git fetch origin main
+          if ! git rebase origin/main; then
+            git rebase --abort || true
+            git pull --no-rebase --strategy-option ours origin main || true
+          fi
+
+          git push origin HEAD:main
+
+      - name: Marcar error en status.json (si falla)
+        if: failure()
+        run: |
+          python - << 'PY'
+          import json, datetime, pathlib
+          outdir = pathlib.Path("docs"); outdir.mkdir(parents=True, exist_ok=True)
+          (outdir / ".nojekyll").write_text("", encoding="utf-8")
+          (outdir/"status.json").write_text(json.dumps({
+              "ok": False,
+              "message": "Fallo en scraper/normalización o push",
+              "generated_at_utc": datetime.datetime.utcnow().isoformat()+"Z"
+          }, separators=(",",":")), encoding="utf-8")
+          PY
