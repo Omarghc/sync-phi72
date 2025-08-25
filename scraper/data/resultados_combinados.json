@@ -1544,5 +1544,93 @@
     "fecha": "2025-08-25",
     "hora": "1:25PM",
     "hora_scrapeo": "2025-08-25 13:47:59"
+  },
+  {
+    "fuente": "loteriasdominicanas.com",
+    "loteria": "Gana Más",
+    "img": "https://cdn-lottery.kiskoo.com/loterias-dominicanas/gana-mas.png",
+    "numeros": [
+      "62",
+      "92",
+      "27"
+    ],
+    "fecha_original": "25-08-2025 14:44",
+    "fecha": "2025-08-25",
+    "hora": null,
+    "hora_scrapeo": "2025-08-25 14:44:59"
+  },
+  {
+    "fuente": "loteriasdominicanas.com",
+    "loteria": "Juega + Pega +",
+    "img": "https://cdn-lottery.kiskoo.com/loterias-dominicanas/b145cbb4804a550c7c9b7b5d793154bf.png",
+    "numeros": [
+      "11",
+      "08",
+      "14",
+      "25",
+      "19"
+    ],
+    "fecha_original": "25-08-2025 14:40",
+    "fecha": "2025-08-25",
+    "hora": null,
+    "hora_scrapeo": "2025-08-25 14:44:59"
+  },
+  {
+    "fuente": "loteriasdominicanas.com",
+    "loteria": "Take 5 Midday",
+    "img": "https://cdn-lottery.kiskoo.com/loterias-dominicanas/take-5-midday-ny.png",
+    "numeros": [
+      "03",
+      "17",
+      "18",
+      "32",
+      "36"
+    ],
+    "fecha_original": "25-08-2025 14:31",
+    "fecha": "2025-08-25",
+    "hora": null,
+    "hora_scrapeo": "2025-08-25 14:44:59"
+  },
+  {
+    "fuente": "loteriasdominicanas.com",
+    "loteria": "New York Tarde",
+    "img": "https://cdn-lottery.kiskoo.com/loterias-dominicanas/new-york-tarde.png",
+    "numeros": [
+      "13",
+      "22",
+      "84"
+    ],
+    "fecha_original": "25-08-2025 14:31",
+    "fecha": "2025-08-25",
+    "hora": null,
+    "hora_scrapeo": "2025-08-25 14:44:59"
+  },
+  {
+    "fuente": "tusnumerosrd.com",
+    "loteria": "New York Tarde",
+    "img": "https://www.tusnumerosrd.com/images/loterias/new_york.svg",
+    "numeros": [
+      "13",
+      "22",
+      "84"
+    ],
+    "fecha_original": "25 agosto",
+    "fecha": "2025-08-25",
+    "hora": "2:25PM",
+    "hora_scrapeo": "2025-08-25 14:45:09"
+  },
+  {
+    "fuente": "tusnumerosrd.com",
+    "loteria": "Anguila Tarde 2PM",
+    "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+    "numeros": [
+      "75",
+      "63",
+      "87"
+    ],
+    "fecha_original": "25 agosto",
+    "fecha": "2025-08-25",
+    "hora": "1:55PM",
+    "hora_scrapeo": "2025-08-25 14:45:09"
   }
 ]
