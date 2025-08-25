@@ -2,31 +2,53 @@ name: Actualizar resultados lotería
 
 on:
   schedule:
-    - cron: "*/10 * * * *"          # cada 10 minutos
+    # Desplazado al minuto 02 para evitar congestión de :00; luego cada 10 min exactos (UTC)
+    - cron: "2,12,22,32,42,52 * * * *"
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 concurrency:
   group: scraper-production
   cancel-in-progress: false
 
-permissions:
-  contents: write
-
 jobs:
   scrape:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      TZ: "America/Santo_Domingo"
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repo (main)
         uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 0
+
+      # 👇 Verifica exactamente cuándo dispara (UTC y RD)
+      - name: Timestamps (UTC y RD)
+        run: |
+          echo "github.event_name=${{ github.event_name }}"
+          echo "github.event.schedule=${{ github.event.schedule }}"
+          date -u +"UTC  %Y-%m-%d %H:%M:%S"
+          TZ="America/Santo_Domingo" date +"RD   %Y-%m-%d %H:%M:%S"
 
       - name: Setup Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: "pip"
+
+      # 👇 Cachea los navegadores de Playwright para que la instalación sea casi instantánea
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
 
       - name: Instalar dependencias Python (incluye Playwright)
         run: |
@@ -36,14 +58,13 @@ jobs:
           pip install playwright beautifulsoup4 requests google-auth google-auth-httplib2 google-auth-oauthlib
           if [ -f scraper/requirements.txt ]; then pip install -r scraper/requirements.txt; fi
 
-      - name: Instalar Playwright + Chromium
+      - name: Instalar Playwright + Chromium (usa cache si existe)
         run: |
           set -euxo pipefail
           python -m playwright install --with-deps chromium
 
-      - name: Ejecutar tu scraper (Playwright con Xvfb) + FCM por secret
+      - name: Ejecutar tu scraper (Xvfb) + FCM por secret
         env:
-          TZ: "America/Santo_Domingo"
           FCM_SERVICE_ACCOUNT_JSON: ${{ secrets.FCM_SERVICE_ACCOUNT_JSON }}
         run: |
           set -euxo pipefail
@@ -51,7 +72,8 @@ jobs:
           ls -la
           echo "Scraper terminado."
 
-      - name: Publicar HOY desde TU JSON ORIGINAL (sin modificar datos) y desactivar Jekyll
+      # ⬇️ Publica EXACTAMENTE los campos que genera tu scraper (sin filtrar), solo para HOY
+      - name: Publicar HOY desde TU JSON ORIGINAL (todos los campos) y desactivar Jekyll
         run: |
           python - << 'PY'
           import json, pathlib, datetime, zoneinfo
@@ -73,38 +95,35 @@ jobs:
 
           if not src:
               payload = {"generado": datetime.datetime.utcnow().isoformat()+"Z", "resultados":[]}
-              (outdir/"resultados.json").write_text(json.dumps(payload, separators=(",",":")), encoding="utf-8")
+              (outdir/"resultados_combinados.json").write_text(json.dumps(payload, separators=(",",":")), encoding="utf-8")
               (outdir/"status.json").write_text(json.dumps({
                   "ok": False, "message": "Sin datos del scraper",
                   "generated_at_utc": payload["generado"]
               }, separators=(",",":")), encoding="utf-8")
-              print("No se encontró resultados_combinados.json")
-              raise SystemExit(0)
+              print("No se encontró resultados_combinados.json"); raise SystemExit(0)
 
-          # Sincroniza histórico en ambas rutas (por si tu script solo escribió en una)
           data = json.loads(src.read_text(encoding="utf-8"))
+
+          # Sincroniza el histórico en ambas rutas (idéntico a lo que generó tu scraper)
           for target in (root_json, orig_json):
               target.parent.mkdir(parents=True, exist_ok=True)
               target.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
-          # Publica SOLO HOY tal cual (sin tocar nombres ni números)
+          # No filtramos claves; copiamos cada objeto tal cual
           items = data if isinstance(data, list) else data.get("resultados", [])
           hoy = hoy_str()
-          solo_hoy = [
-              {k: v for k, v in it.items() if k in ("loteria","numeros","fecha")}
-              for it in items if str(it.get("fecha","")) == hoy
-          ]
+          solo_hoy = [it for it in items if str(it.get("fecha","")) == hoy]
 
           payload = {"generado": datetime.datetime.utcnow().isoformat()+"Z", "resultados": solo_hoy}
-          (outdir/"resultados.json").write_text(json.dumps(payload, ensure_ascii=False, separators=(",",":")), encoding="utf-8")
+          (outdir/"resultados_combinados.json").write_text(json.dumps(payload, ensure_ascii=False, separators=(",",":")), encoding="utf-8")
           (outdir/"status.json").write_text(json.dumps({
               "ok": True, "message": f"HOY {hoy}: {len(solo_hoy)} resultados",
               "generated_at_utc": payload["generado"]
           }, separators=(",",":")), encoding="utf-8")
-          print(f"Publicados HOY {hoy}: {len(solo_hoy)}")
+          print(f"Publicados HOY {hoy}: {len(solo_hoy)} (con todas las claves intactas)")
           PY
 
-      - name: Subir artefactos de depuración (por si algo sale raro)
+      - name: Subir artefactos de depuración
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -118,42 +137,20 @@ jobs:
       - name: Commit & push si hubo cambios (JSON, status y .nojekyll)
         run: |
           set -euxo pipefail
-
-          # Config git
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git pull --rebase origin main || true
 
-          # Stage de salidas
-          git add docs/resultados.json docs/status.json docs/.nojekyll \
+          git add docs/resultados_combinados.json docs/status.json docs/.nojekyll \
                   resultados_combinados.json scraper/data/resultados_combinados.json || true
 
-          # Commit solo si hay cambios
           if git diff --cached --quiet; then
             echo "Nada que commitear"
             exit 0
           fi
+
           git commit -m "chore: actualizar feed ($(date -u +'%Y-%m-%dT%H:%M:%SZ'))"
-
-          # --- Rama local real y rebase sobre origin/main (evita detached HEAD y non-fast-forward) ---
-          git fetch origin main
-          git checkout -B auto-pages   # crea/actualiza rama local apuntando al commit recién hecho
-
-          # Preferimos rebase; si falla, hacemos merge sin editar mensaje
-          if ! git rebase origin/main; then
-            git rebase --abort || true
-            git merge --no-edit origin/main || true
-          fi
-
-          # Push con lease (seguro). Si otro run movió el remoto entre rebase y push, reintentamos una vez.
-          if ! git push --force-with-lease origin auto-pages:main; then
-            git fetch origin main
-            if ! git rebase origin/main; then
-              git rebase --abort || true
-              git merge --no-edit origin/main || true
-            fi
-            git push --force-with-lease origin auto-pages:main
-          fi
+          git push origin HEAD:main
 
       - name: Marcar error en status.json (si falla)
         if: failure()
