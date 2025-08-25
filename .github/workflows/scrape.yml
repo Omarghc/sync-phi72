@@ -134,23 +134,42 @@ jobs:
             debug_*.html
           if-no-files-found: ignore
 
-      - name: Commit & push si hubo cambios (JSON, status y .nojekyll)
+      # ✅ Push sin merges ni rebases; no toca workflows; con retry
+      - name: Commit & push (fast-forward, sin merges ni cambios a workflows)
         run: |
           set -euxo pipefail
+
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git pull --rebase origin main || true
 
-          git add docs/resultados_combinados.json docs/status.json docs/.nojekyll \
+          # Asegura no modificar workflows por accidente (evita error de permisos 'workflows')
+          git checkout -- .github/workflows || true
+
+          # Alinea base con origin/main y aplica SOLO salidas de datos/páginas
+          git fetch origin main
+          git reset --soft origin/main
+
+          # 🔒 Añade SOLO estos archivos (incluyo ambos nombres por compatibilidad)
+          git add -f docs/resultados.json docs/resultados_combinados.json docs/status.json docs/.nojekyll \
                   resultados_combinados.json scraper/data/resultados_combinados.json || true
 
+          # Si no hay cambios, salimos
           if git diff --cached --quiet; then
             echo "Nada que commitear"
             exit 0
           fi
 
           git commit -m "chore: actualizar feed ($(date -u +'%Y-%m-%dT%H:%M:%SZ'))"
-          git push origin HEAD:main
+
+          # Push directo a main; si otro push te ganó la carrera, reintenta una vez
+          if ! git push origin HEAD:main; then
+            git fetch origin main
+            git reset --soft origin/main
+            git add -f docs/resultados.json docs/resultados_combinados.json docs/status.json docs/.nojekyll \
+                    resultados_combinados.json scraper/data/resultados_combinados.json || true
+            git commit -m "chore: actualizar feed (retry $(date -u +'%Y-%m-%dT%H:%M:%SZ'))" || true
+            git push origin HEAD:main
+          fi
 
       - name: Marcar error en status.json (si falla)
         if: failure()
