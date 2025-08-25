@@ -1632,5 +1632,19 @@
     "fecha": "2025-08-25",
     "hora": "1:55PM",
     "hora_scrapeo": "2025-08-25 14:45:09"
+  },
+  {
+    "fuente": "tusnumerosrd.com",
+    "loteria": "Loteria Nacional Tarde (gana mas)",
+    "img": "https://www.tusnumerosrd.com/images/loterias/nacional.svg",
+    "numeros": [
+      "62",
+      "92",
+      "27"
+    ],
+    "fecha_original": "25 agosto",
+    "fecha": "2025-08-25",
+    "hora": "2:30PM",
+    "hora_scrapeo": "2025-08-25 15:01:06"
   }
 ]
