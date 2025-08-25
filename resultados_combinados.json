@@ -1183,5 +1183,33 @@
     "fecha": "2025-08-24",
     "hora": "10:25PM",
     "hora_scrapeo": "2025-08-25 09:43:45"
+  },
+  {
+    "fuente": "loteriasdominicanas.com",
+    "loteria": "Anguila Mañana",
+    "img": "https://cdn-lottery.kiskoo.com/loterias-dominicanas/anguila-manana-10am.png",
+    "numeros": [
+      "53",
+      "54",
+      "12"
+    ],
+    "fecha_original": "25-08-2025 10:01",
+    "fecha": "2025-08-25",
+    "hora": null,
+    "hora_scrapeo": "2025-08-25 10:45:47"
+  },
+  {
+    "fuente": "tusnumerosrd.com",
+    "loteria": "Anguila Mañana 10:00AM",
+    "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+    "numeros": [
+      "53",
+      "54",
+      "12"
+    ],
+    "fecha_original": "25 agosto",
+    "fecha": "2025-08-25",
+    "hora": "9:55AM",
+    "hora_scrapeo": "2025-08-25 10:45:57"
   }
 ]
