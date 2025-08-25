@@ -1744,5 +1744,19 @@
     "fecha": "2025-08-25",
     "hora": "5:55PM",
     "hora_scrapeo": "2025-08-25 18:38:41"
+  },
+  {
+    "fuente": "tusnumerosrd.com",
+    "loteria": "Anguila Noche 7PM",
+    "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+    "numeros": [
+      "98",
+      "30",
+      "28"
+    ],
+    "fecha_original": "25 agosto",
+    "fecha": "2025-08-25",
+    "hora": "6:55PM",
+    "hora_scrapeo": "2025-08-25 19:32:01"
   }
 ]
