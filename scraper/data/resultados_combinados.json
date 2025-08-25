@@ -1688,5 +1688,61 @@
     "fecha": "2025-08-25",
     "hora": "4:55PM",
     "hora_scrapeo": "2025-08-25 17:31:38"
+  },
+  {
+    "fuente": "loteriasdominicanas.com",
+    "loteria": "La Suerte 18:00",
+    "img": "https://cdn-lottery.kiskoo.com/loterias-dominicanas/la-suerte-noche.png",
+    "numeros": [
+      "11",
+      "50",
+      "07"
+    ],
+    "fecha_original": "25-08-2025 18:04",
+    "fecha": "2025-08-25",
+    "hora": null,
+    "hora_scrapeo": "2025-08-25 18:38:30"
+  },
+  {
+    "fuente": "loteriasdominicanas.com",
+    "loteria": "Anguila Tarde",
+    "img": "https://cdn-lottery.kiskoo.com/loterias-dominicanas/anguila-tarde-6pm.png",
+    "numeros": [
+      "78",
+      "05",
+      "01"
+    ],
+    "fecha_original": "25-08-2025 18:01",
+    "fecha": "2025-08-25",
+    "hora": null,
+    "hora_scrapeo": "2025-08-25 18:38:30"
+  },
+  {
+    "fuente": "tusnumerosrd.com",
+    "loteria": "La Suerte noche",
+    "img": "https://www.tusnumerosrd.com/images/loterias/lasuerte.svg",
+    "numeros": [
+      "11",
+      "50",
+      "07"
+    ],
+    "fecha_original": "25 agosto",
+    "fecha": "2025-08-25",
+    "hora": "5:55PM",
+    "hora_scrapeo": "2025-08-25 18:38:41"
+  },
+  {
+    "fuente": "tusnumerosrd.com",
+    "loteria": "Anguila Tarde 6:00PM",
+    "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+    "numeros": [
+      "78",
+      "05",
+      "01"
+    ],
+    "fecha_original": "25 agosto",
+    "fecha": "2025-08-25",
+    "hora": "5:55PM",
+    "hora_scrapeo": "2025-08-25 18:38:41"
   }
 ]
