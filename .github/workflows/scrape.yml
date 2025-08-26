@@ -4,7 +4,9 @@ on:
   schedule:
     # Evita el pico del :00; corre cada 10 min exactos (UTC)
     - cron: "2,12,22,32,42,52 * * * *"
-  workflow_dispatch:
+  workflow_dispatch: {}
+  repository_dispatch:
+    types: [kick]
 
 permissions:
   contents: write
@@ -79,11 +81,9 @@ jobs:
           now_utc = datetime.datetime.utcnow().isoformat()+"Z"
 
           target = pathlib.Path("${{ env.TARGET_API_PATH }}")  # docs/resultados_combinados.json
-          # posibles salidas del scraper en este run
           root_a = pathlib.Path("resultados_combinados.json")
           root_b = pathlib.Path("scraper/data/resultados_combinados.json")
 
-          # 1) lee lo NUEVO de este run (elige el más reciente que exista)
           sources = [p for p in (root_a, root_b) if p.exists()]
           src = max(sources, key=lambda p: p.stat().st_mtime, default=None)
           new_items = []
@@ -94,7 +94,6 @@ jobs:
             except Exception:
               new_items = []
 
-          # 2) lee lo que YA hay publicado (histórico actual del API)
           old_items = []
           if target.exists():
             try:
@@ -103,13 +102,12 @@ jobs:
             except Exception:
               old_items = []
 
-          # 3) merge + dedupe por (loteria, numeros, fecha); si el nuevo trae 'hora' y el viejo no, reemplaza
           def key_nohora(r):
             return (str(r.get("loteria","")).strip(),
                     tuple(r.get("numeros") or []),
                     str(r.get("fecha","")).strip())
 
-          index = { key_nohora(r): i for i, r in enumerate(old_items) }  # preserva orden
+          index = { key_nohora(r): i for i, r in enumerate(old_items) }
           merged = list(old_items)
 
           for r in new_items:
@@ -120,20 +118,17 @@ jobs:
               h_old = (old.get("hora") or "").strip()
               h_new = (r.get("hora")  or "").strip()
               if (not h_old) and h_new:
-                merged[i] = r  # mejora con hora
+                merged[i] = r
             else:
               index[k] = len(merged)
               merged.append(r)
 
-          # 4) escribe payload final (objeto con 'generado' + 'resultados')
           target.parent.mkdir(parents=True, exist_ok=True)
           payload = {"generado": now_utc, "resultados": merged}
           target.write_text(json.dumps(payload, ensure_ascii=False, separators=(",",":")), encoding="utf-8")
-
           print(f"[API] Escrito {target} con TOTAL={len(merged)} registros (leídos {len(new_items)} nuevos)")
           PY
 
-      # Guardrail: no commitear workflows por accidente
       - name: Guardrail - no commitear workflows
         run: |
           set -e
@@ -145,7 +140,6 @@ jobs:
             exit 1
           fi
 
-      # ✅ Push FF: SOLO el JSON de la API
       - name: Commit & push (solo $TARGET_API_PATH)
         run: |
           set -euxo pipefail
