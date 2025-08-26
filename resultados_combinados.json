@@ -2212,5 +2212,33 @@
     "fecha": "2025-08-25",
     "hora": "7:55PM",
     "hora_scrapeo": "2025-08-25 23:31:23"
+  },
+  {
+    "fuente": "tusnumerosrd.com",
+    "loteria": "Anguila Mañana 8AM",
+    "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+    "numeros": [
+      "90",
+      "35",
+      "95"
+    ],
+    "fecha_original": "26 agosto",
+    "fecha": "2025-08-26",
+    "hora": "7:50AM",
+    "hora_scrapeo": "2025-08-26 08:23:36"
+  },
+  {
+    "fuente": "tusnumerosrd.com",
+    "loteria": "New York Noche",
+    "img": "https://www.tusnumerosrd.com/images/loterias/new_york.svg",
+    "numeros": [
+      "43",
+      "19",
+      "84"
+    ],
+    "fecha_original": "25 agosto",
+    "fecha": "2025-08-25",
+    "hora": "10:25PM",
+    "hora_scrapeo": "2025-08-26 08:23:36"
   }
 ]
