@@ -11,7 +11,7 @@ permissions:
 
 concurrency:
   group: scraper-production
-  cancel-in-progress: true   # evita runs solapados que causan conflictos
+  cancel-in-progress: true
 
 jobs:
   scrape:
@@ -19,6 +19,7 @@ jobs:
     timeout-minutes: 20
     env:
       TZ: "America/Santo_Domingo"
+      TARGET_API_PATH: "docs/resultados_combinados.json"  # ÚNICO archivo a publicar
 
     steps:
       - name: Checkout repo (main)
@@ -67,71 +68,72 @@ jobs:
         run: |
           set -euxo pipefail
           xvfb-run -a python scraper/main.py
-          ls -la
           echo "Scraper terminado."
 
-      - name: Publicar HOY desde TU JSON ORIGINAL (todos los campos) y desactivar Jekyll
+      # ⬇️ Publica SOLO en docs/resultados_combinados.json (histórico completo; merge + dedupe)
+      - name: Publicar histórico en $TARGET_API_PATH (merge + dedupe)
         run: |
-          python - << 'PY'
+          python - <<'PY'
           import json, pathlib, datetime, zoneinfo
           TZ = zoneinfo.ZoneInfo("America/Santo_Domingo")
-          def hoy_str(): return datetime.datetime.now(TZ).date().isoformat()
+          now_utc = datetime.datetime.utcnow().isoformat()+"Z"
 
-          root_json = pathlib.Path("resultados_combinados.json")
-          orig_json = pathlib.Path("scraper/data/resultados_combinados.json")
-          src = None
-          if orig_json.exists() and root_json.exists():
-              src = orig_json if orig_json.stat().st_mtime >= root_json.stat().st_mtime else root_json
-          elif orig_json.exists():
-              src = orig_json
-          elif root_json.exists():
-              src = root_json
+          target = pathlib.Path("${{ env.TARGET_API_PATH }}")  # docs/resultados_combinados.json
+          # posibles salidas del scraper en este run
+          root_a = pathlib.Path("resultados_combinados.json")
+          root_b = pathlib.Path("scraper/data/resultados_combinados.json")
 
-          outdir = pathlib.Path("docs"); outdir.mkdir(parents=True, exist_ok=True)
-          (outdir / ".nojekyll").write_text("", encoding="utf-8")
+          # 1) lee lo NUEVO de este run (elige el más reciente que exista)
+          sources = [p for p in (root_a, root_b) if p.exists()]
+          src = max(sources, key=lambda p: p.stat().st_mtime, default=None)
+          new_items = []
+          if src:
+            try:
+              obj = json.loads(src.read_text(encoding="utf-8"))
+              new_items = obj if isinstance(obj, list) else obj.get("resultados", [])
+            except Exception:
+              new_items = []
 
-          if not src:
-              payload = {"generado": datetime.datetime.utcnow().isoformat()+"Z", "resultados":[]}
-              (outdir/"resultados_combinados.json").write_text(json.dumps(payload, separators=(",",":")), encoding="utf-8")
-              (outdir/"status.json").write_text(json.dumps({
-                  "ok": False, "message": "Sin datos del scraper",
-                  "generated_at_utc": payload["generado"]
-              }, separators=(",",":")), encoding="utf-8")
-              print("No se encontró resultados_combinados.json"); raise SystemExit(0)
+          # 2) lee lo que YA hay publicado (histórico actual del API)
+          old_items = []
+          if target.exists():
+            try:
+              obj = json.loads(target.read_text(encoding="utf-8"))
+              old_items = obj if isinstance(obj, list) else obj.get("resultados", [])
+            except Exception:
+              old_items = []
 
-          data = json.loads(src.read_text(encoding="utf-8"))
+          # 3) merge + dedupe por (loteria, numeros, fecha); si el nuevo trae 'hora' y el viejo no, reemplaza
+          def key_nohora(r):
+            return (str(r.get("loteria","")).strip(),
+                    tuple(r.get("numeros") or []),
+                    str(r.get("fecha","")).strip())
 
-          # Sincroniza histórico en ambas rutas (idéntico a lo que generó tu scraper)
-          for target in (root_json, orig_json):
-              target.parent.mkdir(parents=True, exist_ok=True)
-              target.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+          index = { key_nohora(r): i for i, r in enumerate(old_items) }  # preserva orden
+          merged = list(old_items)
 
-          # No filtramos claves; copiamos cada objeto tal cual
-          items = data if isinstance(data, list) else data.get("resultados", [])
-          hoy = hoy_str()
-          solo_hoy = [it for it in items if str(it.get("fecha","")) == hoy]
+          for r in new_items:
+            k = key_nohora(r)
+            if k in index:
+              i = index[k]
+              old = merged[i]
+              h_old = (old.get("hora") or "").strip()
+              h_new = (r.get("hora")  or "").strip()
+              if (not h_old) and h_new:
+                merged[i] = r  # mejora con hora
+            else:
+              index[k] = len(merged)
+              merged.append(r)
 
-          payload = {"generado": datetime.datetime.utcnow().isoformat()+"Z", "resultados": solo_hoy}
-          (outdir/"resultados_combinados.json").write_text(json.dumps(payload, ensure_ascii=False, separators=(",",":")), encoding="utf-8")
-          (outdir/"status.json").write_text(json.dumps({
-              "ok": True, "message": f"HOY {hoy}: {len(solo_hoy)} resultados",
-              "generated_at_utc": payload["generado"]
-          }, separators=(",",":")), encoding="utf-8")
-          print(f"Publicados HOY {hoy}: {len(solo_hoy)} (con todas las claves intactas)")
+          # 4) escribe payload final (objeto con 'generado' + 'resultados')
+          target.parent.mkdir(parents=True, exist_ok=True)
+          payload = {"generado": now_utc, "resultados": merged}
+          target.write_text(json.dumps(payload, ensure_ascii=False, separators=(",",":")), encoding="utf-8")
+
+          print(f"[API] Escrito {target} con TOTAL={len(merged)} registros (leídos {len(new_items)} nuevos)")
           PY
 
-      - name: Subir artefactos de depuración
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: debug-scrape
-          path: |
-            resultados_combinados.json
-            scraper/data/resultados_combinados.json
-            debug_*.html
-          if-no-files-found: ignore
-
-      # 🚧 Guardrail: aborta si por error hay workflows en el stage
+      # Guardrail: no commitear workflows por accidente
       - name: Guardrail - no commitear workflows
         run: |
           set -e
@@ -143,50 +145,29 @@ jobs:
             exit 1
           fi
 
-      # ✅ Push fast-forward: sin merges ni rebases; solo datos/páginas; con retry
-      - name: Commit & push (fast-forward, solo datos)
+      # ✅ Push FF: SOLO el JSON de la API
+      - name: Commit & push (solo $TARGET_API_PATH)
         run: |
           set -euxo pipefail
-
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-          # Alinear base con origin/main y aplicar SOLO salidas de datos/páginas
           git fetch origin main
           git reset --soft origin/main
 
-          # Añade SOLO estos archivos (incluye ambos nombres por compatibilidad)
-          git add -f docs/resultados.json docs/resultados_combinados.json docs/status.json docs/.nojekyll \
-                  resultados_combinados.json scraper/data/resultados_combinados.json || true
+          git add -f "${{ env.TARGET_API_PATH }}" || true
 
-          # Si no hay cambios, salir
           if git diff --cached --quiet; then
             echo "Nada que commitear"
             exit 0
           fi
 
-          git commit -m "chore: actualizar feed ($(date -u +'%Y-%m-%dT%H:%M:%SZ'))"
-
-          # Push directo a main; si alguien se adelantó, reintenta una vez
+          git commit -m "chore: actualizar API ($(date -u +'%Y-%m-%dT%H:%M:%SZ'))"
           if ! git push origin HEAD:main; then
             git fetch origin main
             git reset --soft origin/main
-            git add -f docs/resultados.json docs/resultados_combinados.json docs/status.json docs/.nojekyll \
-                    resultados_combinados.json scraper/data/resultados_combinados.json || true
-            git commit -m "chore: actualizar feed (retry $(date -u +'%Y-%m-%dT%H:%M:%SZ'))" || true
+            git add -f "${{ env.TARGET_API_PATH }}" || true
+            git commit -m "chore: actualizar API (retry $(date -u +'%Y-%m-%dT%H:%M:%SZ'))" || true
             git push origin HEAD:main
           fi
-
-      - name: Marcar error en status.json (si falla)
-        if: failure()
-        run: |
-          python - << 'PY'
-          import json, datetime, pathlib
-          outdir = pathlib.Path("docs"); outdir.mkdir(parents=True, exist_ok=True)
-          (outdir / ".nojekyll").write_text("", encoding="utf-8")
-          (outdir/"status.json").write_text(json.dumps({
-              "ok": False,
-              "message": "Fallo en scraper/normalización o push",
-              "generated_at_utc": datetime.datetime.utcnow().isoformat()+"Z"
-          }, separators=(",",":")), encoding="utf-8")
-          PY
