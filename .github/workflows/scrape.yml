@@ -2,7 +2,7 @@ name: Actualizar resultados lotería
 
 on:
   schedule:
-    # Desplazado al minuto 02 para evitar congestión de :00; luego cada 10 min exactos (UTC)
+    # Evita el pico del :00; corre cada 10 min exactos (UTC)
     - cron: "2,12,22,32,42,52 * * * *"
   workflow_dispatch:
 
@@ -11,7 +11,7 @@ permissions:
 
 concurrency:
   group: scraper-production
-  cancel-in-progress: false
+  cancel-in-progress: true   # evita runs solapados que causan conflictos
 
 jobs:
   scrape:
@@ -27,7 +27,6 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      # 👇 Verifica exactamente cuándo dispara (UTC y RD)
       - name: Timestamps (UTC y RD)
         run: |
           echo "github.event_name=${{ github.event_name }}"
@@ -41,7 +40,6 @@ jobs:
           python-version: "3.11"
           cache: "pip"
 
-      # 👇 Cachea los navegadores de Playwright para que la instalación sea casi instantánea
       - name: Cache Playwright browsers
         uses: actions/cache@v4
         with:
@@ -72,7 +70,6 @@ jobs:
           ls -la
           echo "Scraper terminado."
 
-      # ⬇️ Publica EXACTAMENTE los campos que genera tu scraper (sin filtrar), solo para HOY
       - name: Publicar HOY desde TU JSON ORIGINAL (todos los campos) y desactivar Jekyll
         run: |
           python - << 'PY'
@@ -104,7 +101,7 @@ jobs:
 
           data = json.loads(src.read_text(encoding="utf-8"))
 
-          # Sincroniza el histórico en ambas rutas (idéntico a lo que generó tu scraper)
+          # Sincroniza histórico en ambas rutas (idéntico a lo que generó tu scraper)
           for target in (root_json, orig_json):
               target.parent.mkdir(parents=True, exist_ok=True)
               target.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -134,26 +131,35 @@ jobs:
             debug_*.html
           if-no-files-found: ignore
 
-      # ✅ Push sin merges ni rebases; no toca workflows; con retry
-      - name: Commit & push (fast-forward, sin merges ni cambios a workflows)
+      # 🚧 Guardrail: aborta si por error hay workflows en el stage
+      - name: Guardrail - no commitear workflows
+        run: |
+          set -e
+          if git diff --name-only | grep -qE '^\.github/workflows/'; then
+            git checkout -- .github/workflows
+          fi
+          if git diff --cached --name-only | grep -qE '^\.github/workflows/'; then
+            echo "::error::Se detectaron workflows en el stage. Abortando push."
+            exit 1
+          fi
+
+      # ✅ Push fast-forward: sin merges ni rebases; solo datos/páginas; con retry
+      - name: Commit & push (fast-forward, solo datos)
         run: |
           set -euxo pipefail
 
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          # Asegura no modificar workflows por accidente (evita error de permisos 'workflows')
-          git checkout -- .github/workflows || true
-
-          # Alinea base con origin/main y aplica SOLO salidas de datos/páginas
+          # Alinear base con origin/main y aplicar SOLO salidas de datos/páginas
           git fetch origin main
           git reset --soft origin/main
 
-          # 🔒 Añade SOLO estos archivos (incluyo ambos nombres por compatibilidad)
+          # Añade SOLO estos archivos (incluye ambos nombres por compatibilidad)
           git add -f docs/resultados.json docs/resultados_combinados.json docs/status.json docs/.nojekyll \
                   resultados_combinados.json scraper/data/resultados_combinados.json || true
 
-          # Si no hay cambios, salimos
+          # Si no hay cambios, salir
           if git diff --cached --quiet; then
             echo "Nada que commitear"
             exit 0
@@ -161,7 +167,7 @@ jobs:
 
           git commit -m "chore: actualizar feed ($(date -u +'%Y-%m-%dT%H:%M:%SZ'))"
 
-          # Push directo a main; si otro push te ganó la carrera, reintenta una vez
+          # Push directo a main; si alguien se adelantó, reintenta una vez
           if ! git push origin HEAD:main; then
             git fetch origin main
             git reset --soft origin/main
