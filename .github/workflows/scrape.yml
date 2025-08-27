@@ -64,15 +64,26 @@ jobs:
           set -euxo pipefail
           python -m playwright install --with-deps chromium
 
-      - name: Ejecutar tu scraper (Xvfb) + FCM por secret
+      # ✅ Trae histórico previo para que el scraper calcule el delta correctamente
+      - name: Preparar histórico local para scraper
+        run: |
+          set -euxo pipefail
+          if [ -f "${{ env.TARGET_API_PATH }}" ]; then
+            cp -f "${{ env.TARGET_API_PATH }}" resultados_combinados.json
+            echo "Histórico copiado a resultados_combinados.json"
+          else
+            echo "No hay histórico previo en ${{ env.TARGET_API_PATH }}; se generará desde cero."
+          fi
+
+      - name: Ejecutar scraper (headless) + FCM via secret
         env:
           FCM_SERVICE_ACCOUNT_JSON: ${{ secrets.FCM_SERVICE_ACCOUNT_JSON }}
         run: |
           set -euxo pipefail
-          xvfb-run -a python scraper/main.py
+          xvfb-run -a python scraper.py
           echo "Scraper terminado."
 
-      # ⬇️ Publica SOLO en docs/resultados_combinados.json (histórico completo; merge + dedupe)
+      # ⬇️ Publica SOLO en docs/resultados_combinados.json (merge + dedupe)
       - name: Publicar histórico en $TARGET_API_PATH (merge + dedupe)
         run: |
           python - <<'PY'
@@ -140,7 +151,7 @@ jobs:
             exit 1
           fi
 
-      - name: Commit & push (solo $TARGET_API_PATH)
+      - name: Commit & push (API + sent_cache)
         run: |
           set -euxo pipefail
           git config user.name  "github-actions[bot]"
@@ -150,7 +161,7 @@ jobs:
           git fetch origin main
           git reset --soft origin/main
 
-          git add -f "${{ env.TARGET_API_PATH }}" || true
+          git add -f "${{ env.TARGET_API_PATH }}" sent_cache.json || true
 
           if git diff --cached --quiet; then
             echo "Nada que commitear"
@@ -161,7 +172,7 @@ jobs:
           if ! git push origin HEAD:main; then
             git fetch origin main
             git reset --soft origin/main
-            git add -f "${{ env.TARGET_API_PATH }}" || true
+            git add -f "${{ env.TARGET_API_PATH }}" sent_cache.json || true
             git commit -m "chore: actualizar API (retry $(date -u +'%Y-%m-%dT%H:%M:%SZ'))" || true
             git push origin HEAD:main
           fi
