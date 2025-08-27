@@ -11,6 +11,7 @@ import google.auth.transport.requests
 # === Proyecto / Topics ===
 PROJECT_ID = "bancard-a52ba"            # <-- tu proyecto
 TOPIC_GLOBAL = "resultados_loteria"     # usuarios sin favoritas
+ANDROID_CHANNEL_ID = "resultados_loteria_high"  # Debe existir en tu app (Manifest)
 
 # === TZ RD (sin DST) ===
 TZ_RD = timezone(timedelta(hours=-4), name="America/Santo_Domingo")
@@ -332,8 +333,9 @@ def _get_fcm_credentials():
     print("❌ SA: no encontrada")
     return None
 
-def enviar_fcm_v1_data(topic: str, data: dict, collapse_key: str, ttl_seconds: int = 900):
-    """DATA-ONLY (sin 'notification') para que el cliente pueda filtrar; colapsa en tránsito."""
+def enviar_fcm_v1(title: str, body: str, topic: str, data: dict,
+                  collapse_key: str, tag: str, ttl_seconds: int = 900):
+    """Envía FCM con notification + data (Android muestra en background)."""
     creds = _get_fcm_credentials()
     if not creds:
         print("⚠️ FCM omitido: credenciales no disponibles.")
@@ -342,18 +344,26 @@ def enviar_fcm_v1_data(topic: str, data: dict, collapse_key: str, ttl_seconds: i
     creds.refresh(req)
     token = creds.token
 
-    # FCM data map: todos los valores deben ser string
+    # FCM data map: todos string
     data = {k: ('' if v is None else str(v)) for k, v in (data or {}).items()}
 
     url = f"https://fcm.googleapis.com/v1/projects/{PROJECT_ID}/messages:send"
     message = {
         "message": {
             "topic": topic,
+            "notification": {  # <- esto hace que Android muestre en background
+                "title": title,
+                "body": body
+            },
             "data": data,
             "android": {
                 "ttl": f"{ttl_seconds}s",
                 "priority": "HIGH",
                 "collapse_key": collapse_key,
+                "notification": {
+                    "channel_id": ANDROID_CHANNEL_ID,
+                    "tag": tag  # dedupe a nivel sistema
+                }
             }
         }
     }
@@ -452,7 +462,7 @@ def main():
         fecha_txt = last.get('fecha') or ""
         hora_txt  = last.get('hora') or ""
         numeros   = last.get('numeros') or []
-        nums_txt  = " ".join([str(x).zfill(2) for x in numeros])  # tu JSON usa strings, preserva ceros
+        nums_txt  = " ".join([str(x).zfill(2) for x in numeros])  # preserva ceros a la izquierda
 
         dedupe_id = f"{topic_seguro(lot)}|{nums_key(numeros)}|{fecha_txt}"
         if dedupe_id in sent_cache:
@@ -468,13 +478,26 @@ def main():
             "fuente": last.get('fuente', ''),
         }
 
-        topic_especifico = topic_seguro(lot)
-        collapse = f"{topic_especifico}_{fecha_txt}"
+        title = f"Resultados de {lot}"
+        body  = f"{nums_txt} • {fecha_txt}" + (f" · {hora_txt}" if hora_txt else "")
 
-        # a) tópico específico
-        enviar_fcm_v1_data(topic_especifico, payload, collapse_key=collapse, ttl_seconds=900)
-        # b) tópico global
-        enviar_fcm_v1_data(TOPIC_GLOBAL, payload, collapse_key=collapse, ttl_seconds=900)
+        topic_especifico = topic_seguro(lot)                 # canónico
+        topic_alias = topic_seguro(last.get('loteria') or lot)  # alias crudo de la fuente
+        collapse = f"{topic_especifico}_{fecha_txt}"
+        tag = dedupe_id  # estable por lotería+fecha+números
+
+        # a) tópico específico (canónico)
+        enviar_fcm_v1(title, body, topic_especifico, payload,
+                      collapse_key=collapse, tag=tag, ttl_seconds=900)
+
+        # b) también al alias “raw” por compatibilidad
+        if topic_alias != topic_especifico:
+            enviar_fcm_v1(title, body, topic_alias, payload,
+                          collapse_key=collapse, tag=tag, ttl_seconds=900)
+
+        # c) tópico global
+        enviar_fcm_v1(title, body, TOPIC_GLOBAL, payload,
+                      collapse_key=collapse, tag=tag, ttl_seconds=900)
 
         sent_cache[dedupe_id] = datetime.now(TZ_RD).timestamp()
 
