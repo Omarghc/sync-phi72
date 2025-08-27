@@ -22,17 +22,24 @@ MESES = {
 
 # ---------- Utilidades ----------
 def normaliza_fecha(fecha: str) -> str:
-    """A yyyy-MM-dd cuando es posible."""
+    """Devuelve yyyy-MM-dd cuando es posible."""
     if not fecha:
         return fecha
     fecha = fecha.strip()
 
-    m = re.match(r"^(\d{2})-(\d{2})-(\d{4})$", fecha)
-    if m:  # dd-MM-yyyy -> yyyy-MM-dd
+    # dd-MM-yyyy HH:mm  -> yyyy-MM-dd
+    m = re.match(r"^(\d{2})-(\d{2})-(\d{4})\s+\d{2}:\d{2}$", fecha)
+    if m:
         return f"{m.group(3)}-{m.group(2)}-{m.group(1)}"
 
+    # dd-MM-yyyy -> yyyy-MM-dd
+    m = re.match(r"^(\d{2})-(\d{2})-(\d{4})$", fecha)
+    if m:
+        return f"{m.group(3)}-{m.group(2)}-{m.group(1)}"
+
+    # "15 julio" -> yyyy-07-15 (año actual)
     m = re.match(r"^(\d{1,2})\s+([a-zA-ZáéíóúÁÉÍÓÚñÑ]+)$", fecha)
-    if m:  # "15 julio" -> yyyy-07-15 (año actual)
+    if m:
         hoy = datetime.now(TZ_RD)
         dia = int(m.group(1))
         mes = MESES.get(m.group(2).lower(), "01")
@@ -128,7 +135,7 @@ def parse_dt(item) -> datetime|None:
                 if ampm == 'AM' and hh == 12: hh = 0
         return datetime(y, mo, d, hh, mm, tzinfo=TZ_RD)
 
-    # dd-MM-yyyy HH:mm
+    # dd-MM-yyyy HH:mm  (ojo: ya normalizamos arriba a yyyy-MM-dd si venía con hora)
     m = re.match(r'^(\d{2})-(\d{2})-(\d{4})\s+(\d{2}):(\d{2})$', raw_fecha)
     if m:
         d, mo, y, hh, mm = map(int, m.groups())
@@ -186,7 +193,7 @@ def scrapear_loterias_dominicanas():
                     if not (fecha_tag and nombre_tag and numeros_tag):
                         continue
                     fecha = fecha_tag.get_text(strip=True)
-                    fecha_normalizada = normaliza_fecha(fecha)
+                    fecha_normalizada = normaliza_fecha(fecha)  # -> yyyy-MM-dd si venía con hora
                     nombre = nombre_tag.get_text(strip=True)
                     numeros = [n.get_text(strip=True) for n in numeros_tag.select("span.score")]
 
@@ -234,7 +241,7 @@ def scrapear_tusnumerosrd():
                     fecha = fecha_tag.get_text(strip=True) if fecha_tag else ""
                     fecha_normalizada = normaliza_fecha(fecha)
                     celdas = fila.find_all("td", class_="text-center")
-                    hora = celdas[-1].get_text(strip=True) if celdas else None
+                    hora = celdas[-1].get_text(strip=True) if celdas else None  # ej. 8:55PM
 
                     if nombre and numeros:
                         resultados.append({
@@ -335,6 +342,9 @@ def enviar_fcm_v1_data(topic: str, data: dict, collapse_key: str, ttl_seconds: i
     creds.refresh(req)
     token = creds.token
 
+    # FCM data map: todos los valores deben ser string
+    data = {k: ('' if v is None else str(v)) for k, v in (data or {}).items()}
+
     url = f"https://fcm.googleapis.com/v1/projects/{PROJECT_ID}/messages:send"
     message = {
         "message": {
@@ -373,6 +383,18 @@ def save_sent_cache(cache: dict):
     with open(SENT_CACHE, "w", encoding="utf-8") as f:
         json.dump(cache, f)
 
+def _clean_for_json(items):
+    """Copia registros quitando campos internos (p. ej. _dt) antes de serializar."""
+    clean = []
+    for r in items:
+        if isinstance(r, dict):
+            rr = dict(r)
+            for k in list(rr.keys()):
+                if k.startswith('_'):
+                    rr.pop(k, None)
+            clean.append(rr)
+    return clean
+
 # ---------- MAIN ----------
 def main():
     print("🔍 Buscando en loteriasdominicanas.com...")
@@ -395,18 +417,21 @@ def main():
 
     if not solo_hoy:
         print("⚠️ No hay resultados de HOY para enviar.")
+
     # 2) Persistencia del archivo público (guardamos lo de hoy sobre histórico)
     historico = cargar_historico()
     delta = delta_nuevos(historico, solo_hoy)
     delta = compactar_delta(delta)
 
     resultados_actualizados = evitar_duplicados(historico, solo_hoy)
+    resultados_a_grabar = _clean_for_json(resultados_actualizados)   # ❗ evita datetime en JSON
+
     with open("resultados_combinados.json", "w", encoding="utf-8") as f:
         json.dump({
             "generado": datetime.now(TZ_RD).isoformat(),
-            "resultados": resultados_actualizados
+            "resultados": resultados_a_grabar
         }, f, indent=2, ensure_ascii=False)
-    print(f"📦 Guardados {len(resultados_actualizados)} en resultados_combinados.json")
+    print(f"📦 Guardados {len(resultados_a_grabar)} en resultados_combinados.json")
     print(f"➕ Nuevos HOY a enviar: {len(delta)}")
 
     if not delta:
@@ -427,7 +452,7 @@ def main():
         fecha_txt = last.get('fecha') or ""
         hora_txt  = last.get('hora') or ""
         numeros   = last.get('numeros') or []
-        nums_txt  = "·".join([str(x).zfill(2) for x in numeros])
+        nums_txt  = " ".join([str(x).zfill(2) for x in numeros])  # tu JSON usa strings, preserva ceros
 
         dedupe_id = f"{topic_seguro(lot)}|{nums_key(numeros)}|{fecha_txt}"
         if dedupe_id in sent_cache:
