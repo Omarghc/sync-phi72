@@ -1,44 +1,43 @@
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
-import json
-from datetime import datetime
-import os
-import re
-import unicodedata
+import json, os, re, unicodedata
+from datetime import datetime, timedelta, timezone
 
-# --- FCM V1 DEPENDENCIAS ---
+# --- FCM V1 ---
 import requests
 from google.oauth2 import service_account
 import google.auth.transport.requests
 
-# === FALLBACK LOCAL PARA LA CREDENCIAL (no depende del env var) ===
-LOCAL_FCM_KEY = r"C:\Users\jansel.sanchez\Secrets\bancard-a52ba-afdeebce358b.json"
-if "GOOGLE_APPLICATION_CREDENTIALS" not in os.environ and os.path.isfile(LOCAL_FCM_KEY):
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = LOCAL_FCM_KEY
+# === Proyecto / Topics ===
+PROJECT_ID = "bancard-a52ba"            # <-- tu proyecto
+TOPIC_GLOBAL = "resultados_loteria"     # usuarios sin favoritas
 
-# === CONFIGURA AQUÍ TU JSON/PROYECTO ===
-SERVICE_ACCOUNT_FILE = os.getenv('GOOGLE_APPLICATION_CREDENTIALS', 'bancard-a52ba-afdeebce358b.json')
-PROJECT_ID = "bancard-a52ba"
-TOPIC_GLOBAL = "resultados_loteria"
-ANDROID_CHANNEL_ID = "resultados_loteria_high"  # Debe existir en tu app (Manifest)
+# === TZ RD (sin DST) ===
+TZ_RD = timezone(timedelta(hours=-4), name="America/Santo_Domingo")
 
 MESES = {
-    'enero': '01', 'febrero': '02', 'marzo': '03', 'abril': '04', 'mayo': '05', 'junio': '06',
-    'julio': '07', 'agosto': '08', 'septiembre': '09', 'octubre': '10', 'noviembre': '11', 'diciembre': '12'
+    'enero':'01','febrero':'02','marzo':'03','abril':'04','mayo':'05','junio':'06',
+    'julio':'07','agosto':'08','septiembre':'09','setiembre':'09','octubre':'10','noviembre':'11','diciembre':'12'
 }
 
-def normaliza_fecha(fecha):
-    # 15-07-2025  -> 2025-07-15
-    match = re.match(r"(\d{2})-(\d{2})-(\d{4})", fecha)
-    if match:
-        return f"{match.group(3)}-{match.group(2)}-{match.group(1)}"
-    # 15 julio -> YYYY-07-15 (asume año actual)
-    match = re.match(r"(\d{2})\s+([a-zA-ZáéíóúÁÉÍÓÚñÑ]+)", fecha)
-    if match:
-        hoy = datetime.now()
-        dia = match.group(1)
-        mes = MESES.get(match.group(2).lower(), "01")
-        return f"{hoy.year}-{mes}-{dia}"
+# ---------- Utilidades ----------
+def normaliza_fecha(fecha: str) -> str:
+    """A yyyy-MM-dd cuando es posible."""
+    if not fecha:
+        return fecha
+    fecha = fecha.strip()
+
+    m = re.match(r"^(\d{2})-(\d{2})-(\d{4})$", fecha)
+    if m:  # dd-MM-yyyy -> yyyy-MM-dd
+        return f"{m.group(3)}-{m.group(2)}-{m.group(1)}"
+
+    m = re.match(r"^(\d{1,2})\s+([a-zA-ZáéíóúÁÉÍÓÚñÑ]+)$", fecha)
+    if m:  # "15 julio" -> yyyy-07-15 (año actual)
+        hoy = datetime.now(TZ_RD)
+        dia = int(m.group(1))
+        mes = MESES.get(m.group(2).lower(), "01")
+        return f"{hoy.year}-{mes}-{dia:02d}"
+
     return fecha
 
 def sanitizar_logo(url: str) -> str:
@@ -46,14 +45,6 @@ def sanitizar_logo(url: str) -> str:
         return url
     return re.sub(r'\?.*$', '', url)
 
-def topic_seguro(nombre: str) -> str:
-    # sin acentos, minúsculas y no alfanum → _
-    s = unicodedata.normalize('NFD', nombre).encode('ascii', 'ignore').decode('utf-8')
-    s = s.lower()
-    s = re.sub(r'[^a-z0-9]', '_', s)
-    return 'loteria_' + s
-
-# ---------- Canonicalización ----------
 def _plain_lower(s: str) -> str:
     s = unicodedata.normalize('NFD', s or '').encode('ascii','ignore').decode('utf-8')
     s = re.sub(r'\s+', ' ', s.strip()).lower()
@@ -95,27 +86,86 @@ def canonicaliza_loteria(nombre: str) -> str:
     k = re.sub(r'^(loteria|lottery)\s+', '', _plain_lower(nombre))
     return CANON_MAP.get(k, nombre)
 
-# --- clave única para deduplicación --- (SIN hora, para colapsar si 2 fuentes difieren en hora)
-def make_dedupe_key(loteria: str, numeros: list, fecha: str, hora: str|None) -> str:
+def topic_seguro(nombre: str) -> str:
+    s = unicodedata.normalize('NFD', nombre or '').encode('ascii', 'ignore').decode('utf-8')
+    s = s.lower()
+    s = re.sub(r'[^a-z0-9]+', '_', s)
+    s = re.sub(r'_+', '_', s).strip('_')
+    return 'loteria_' + s
+
+def nums_key(numeros)->str:
+    arr = []
+    for x in (numeros or []):
+        m = re.findall(r"\d+", str(x))
+        if m: arr.append(m[0])
+    arr = sorted(arr, key=lambda x:int(x))
+    return "-".join(arr)
+
+# --- clave única para dedupe (SIN hora) ---
+def make_dedupe_key(loteria: str, numeros: list, fecha: str) -> str:
     lot = canonicaliza_loteria(loteria or "")
     nums = ",".join(numeros or [])
-    base = f"{lot}|{nums}|{fecha}"          # <<<< sin hora
-    base = re.sub(r'\s+', ' ', base).strip()
-    return base
+    base = f"{lot}|{nums}|{fecha}"
+    return re.sub(r'\s+', ' ', base).strip()
 
-# --------------------------------------------------------------------------------------
+# ---------- Parseo fecha/hora a datetime (TZ RD) ----------
+def parse_dt(item) -> datetime|None:
+    raw_fecha = (item.get('fecha') or item.get('fecha_original') or '').strip()
+    raw_fecha = normaliza_fecha(raw_fecha)
+    raw_hora  = (item.get('hora') or '').strip()
 
+    # yyyy-MM-dd (+ hora AM/PM)
+    m = re.match(r'^(\d{4})-(\d{2})-(\d{2})$', raw_fecha)
+    if m:
+        y, mo, d = int(m.group(1)), int(m.group(2)), int(m.group(3))
+        hh, mm = 12, 0
+        if raw_hora:
+            h = re.match(r'^(\d{1,2}):(\d{2})\s*([AaPp][Mm])$', raw_hora.replace(' ', ''))
+            if h:
+                hh = int(h.group(1)); mm = int(h.group(2))
+                ampm = h.group(3).upper()
+                if ampm == 'PM' and hh != 12: hh += 12
+                if ampm == 'AM' and hh == 12: hh = 0
+        return datetime(y, mo, d, hh, mm, tzinfo=TZ_RD)
+
+    # dd-MM-yyyy HH:mm
+    m = re.match(r'^(\d{2})-(\d{2})-(\d{4})\s+(\d{2}):(\d{2})$', raw_fecha)
+    if m:
+        d, mo, y, hh, mm = map(int, m.groups())
+        return datetime(y, mo, d, hh, mm, tzinfo=TZ_RD)
+
+    # "dd mes" (+hora) -> año actual
+    m = re.match(r'^(\d{1,2})\s+([a-záéíóúñ]+)$', raw_fecha.lower())
+    if m:
+        d = int(m.group(1)); mes_txt = m.group(2)
+        mo = int(MESES.get(mes_txt, '00'))
+        if mo == 0: return None
+        now = datetime.now(TZ_RD)
+        hh, mm = 12, 0
+        if raw_hora:
+            h = re.match(r'^(\d{1,2}):(\d{2})\s*([AaPp][Mm])$', raw_hora.replace(' ', ''))
+            if h:
+                hh = int(h.group(1)); mm = int(h.group(2))
+                ampm = h.group(3).upper()
+                if ampm == 'PM' and hh != 12: hh += 12
+                if ampm == 'AM' and hh == 12: hh = 0
+        return datetime(now.year, mo, d, hh, mm, tzinfo=TZ_RD)
+    return None
+
+def is_today(dt: datetime) -> bool:
+    now = datetime.now(TZ_RD)
+    return (dt.year, dt.month, dt.day) == (now.year, now.month, now.day)
+
+# ---------- Scrapers ----------
 def scrapear_loterias_dominicanas():
     resultados = []
     try:
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=False)
+            browser = p.chromium.launch(headless=True)
             page = browser.new_page()
             page.goto("https://loteriasdominicanas.com/pagina/ultimos-resultados", timeout=60000)
             page.wait_for_selector("div.game-info.p-2", timeout=20000)
             html = page.content()
-            with open("debug_loterias.html", "w", encoding="utf-8") as f:
-                f.write(html)
             soup = BeautifulSoup(html, 'html.parser')
             juegos = soup.select("div.game-info.p-2")
             for juego in juegos:
@@ -134,13 +184,12 @@ def scrapear_loterias_dominicanas():
                     img_url = sanitizar_logo(img_url)
 
                     if not (fecha_tag and nombre_tag and numeros_tag):
-                        print("[LoteriasDom] ⛔ Falta dato, se omite.")
                         continue
                     fecha = fecha_tag.get_text(strip=True)
                     fecha_normalizada = normaliza_fecha(fecha)
                     nombre = nombre_tag.get_text(strip=True)
                     numeros = [n.get_text(strip=True) for n in numeros_tag.select("span.score")]
-                    print(f"[LoteriasDom] Fecha: {fecha_normalizada} | Lotería: {nombre} | Números: {numeros}")
+
                     resultados.append({
                         'fuente': 'loteriasdominicanas.com',
                         'loteria': nombre,
@@ -149,27 +198,24 @@ def scrapear_loterias_dominicanas():
                         'fecha_original': fecha,
                         'fecha': fecha_normalizada,
                         'hora': None,  # esta fuente no trae hora
-                        'hora_scrapeo': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        'hora_scrapeo': datetime.now(TZ_RD).strftime('%Y-%m-%d %H:%M:%S')
                     })
-                except Exception as e:
-                    print(f"[LoteriasDom] Error juego: {e}")
+                except Exception:
                     continue
             browser.close()
     except Exception as e:
-        print(f"❌ Error al scrapear loteriasdominicanas.com: {e}")
+        print(f"❌ Error loteriasdominicanas.com: {e}")
     return resultados
 
 def scrapear_tusnumerosrd():
     resultados = []
     try:
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=False)
+            browser = p.chromium.launch(headless=True)
             page = browser.new_page()
             page.goto("https://www.tusnumerosrd.com/resultados.php", timeout=60000)
-            page.wait_for_timeout(9000)
+            page.wait_for_timeout(6000)
             html = page.content()
-            with open("debug_tusnumerosrd.html", "w", encoding="utf-8") as f:
-                f.write(html)
             soup = BeautifulSoup(html, 'html.parser')
             filas = soup.select("tr")
             for fila in filas:
@@ -185,11 +231,11 @@ def scrapear_tusnumerosrd():
                     img_url = sanitizar_logo(img_url)
                     numeros = [n.get_text(strip=True) for n in fila.select("div.badge.badge-primary.badge-dot")]
                     fecha_tag = fila.select_one("span.table-inner-text")
-                    fecha = fecha_tag.get_text(strip=True) if fecha_tag else "Fecha no encontrada"
+                    fecha = fecha_tag.get_text(strip=True) if fecha_tag else ""
                     fecha_normalizada = normaliza_fecha(fecha)
                     celdas = fila.find_all("td", class_="text-center")
                     hora = celdas[-1].get_text(strip=True) if celdas else None
-                    print(f"[TusNumerosRD] Fecha: {fecha_normalizada} | Lotería: {nombre} | Números: {numeros}")
+
                     if nombre and numeros:
                         resultados.append({
                             'fuente': 'tusnumerosrd.com',
@@ -199,113 +245,41 @@ def scrapear_tusnumerosrd():
                             'fecha_original': fecha,
                             'fecha': fecha_normalizada,
                             'hora': hora,
-                            'hora_scrapeo': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                            'hora_scrapeo': datetime.now(TZ_RD).strftime('%Y-%m-%d %H:%M:%S')
                         })
-                except Exception as e:
-                    print(f"[TusNumerosRD] Error fila: {e}")
+                except Exception:
                     continue
             browser.close()
     except Exception as e:
-        print(f"❌ Error al scrapear tusnumerosrd.com: {e}")
+        print(f"❌ Error tusnumerosrd.com: {e}")
     return resultados
 
+# ---------- Persistencia ----------
 def cargar_historico(path="resultados_combinados.json"):
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
             try:
-                return json.load(f)
+                data = json.load(f)
+                if isinstance(data, dict) and "resultados" in data:
+                    return data["resultados"]
+                return data if isinstance(data, list) else []
             except Exception:
                 return []
     return []
 
-# ======== CLAVE con HORA para deduplicar y contar ========
 def _clave(r):
-    return (r['loteria'], tuple(r['numeros']), r['fecha'], r.get('hora'))
+    return (r.get('loteria',''), tuple(r.get('numeros') or []), r.get('fecha',''), r.get('hora'))
 
 def evitar_duplicados(resultados_viejos, nuevos):
     existentes = set(_clave(r) for r in resultados_viejos)
-    no_duplicados = []
-    for r in nuevos:
-        if _clave(r) not in existentes:
-            no_duplicados.append(r)
+    no_duplicados = [r for r in nuevos if _clave(r) not in existentes]
     return resultados_viejos + no_duplicados
 
 def delta_nuevos(historico, nuevos):
     existentes = set(_clave(r) for r in historico)
     return [r for r in nuevos if _clave(r) not in existentes]
 
-def _contar_nuevos_exclusivos(historico, nuevos):
-    existentes = set(_clave(r) for r in historico)
-    return sum(1 for r in nuevos if _clave(r) not in existentes)
-
-# ---------- Credenciales FCM ----------
-def _get_fcm_credentials():
-    SCOPES = ['https://www.googleapis.com/auth/firebase.messaging']
-    env_json = os.getenv("FCM_SERVICE_ACCOUNT_JSON")
-    if env_json:
-        try:
-            info = json.loads(env_json)
-            if info.get("project_id") and info.get("project_id") != PROJECT_ID:
-                print(f"⚠️ SA project_id {info.get('project_id')} != {PROJECT_ID}")
-            return service_account.Credentials.from_service_account_info(info, scopes=SCOPES)
-        except Exception as e:
-            print(f"⚠️ SA en env inválida: {e}")
-    if SERVICE_ACCOUNT_FILE and os.path.isfile(SERVICE_ACCOUNT_FILE):
-        try:
-            return service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-        except Exception as e:
-            print(f"⚠️ SA por archivo inválida: {e}")
-    return None
-
-# ========== FUNCION FCM V1 ==========
-def enviar_fcm_v1(title, body, topic="resultados_loteria", data=None):
-    credentials = _get_fcm_credentials()
-    if not credentials:
-        print("⚠️ FCM omitido: credenciales no disponibles.")
-        return
-
-    try:
-        auth_req = google.auth.transport.requests.Request()
-        credentials.refresh(auth_req)
-        access_token = credentials.token
-
-        # usa dedupe_key como tag si viene en data (sin hora)
-        dedupe_tag = None
-        if data and isinstance(data, dict):
-            dedupe_tag = data.get("dedupe_key")
-
-        url = f"https://fcm.googleapis.com/v1/projects/{PROJECT_ID}/messages:send"
-        message = {
-            "message": {
-                "topic": topic,
-                "notification": {
-                    "title": title,
-                    "body": body
-                },
-                "android": {
-                    "priority": "HIGH",
-                    "notification": {
-                        "channel_id": ANDROID_CHANNEL_ID,
-                        "tag": dedupe_tag or topic
-                    }
-                },
-                "data": data or {}
-            }
-        }
-        headers = {
-            "Authorization": f"Bearer {access_token}",
-            "Content-Type": "application/json; charset=UTF-8",
-        }
-
-        response = requests.post(url, headers=headers, json=message, timeout=15)
-        if response.ok:
-            print(f"✅ Notificación enviada a /topics/{topic}")
-        else:
-            print(f"⚠️ Error enviando notificación FCM v1: {response.status_code} - {response.text}")
-    except Exception as e:
-        print(f"⚠️ FCM: excepción no controlada: {e}")
-
-# ======== COMPACTAR DELTA (evitar duplicados entre fuentes) ========
+# --- dedupe entre fuentes (misma lotería/fecha/números) ---
 def _grupo_clave(r):
     lot_can = canonicaliza_loteria(r.get('loteria', '') or '')
     fecha = r.get('fecha') or ''
@@ -313,10 +287,6 @@ def _grupo_clave(r):
     return (lot_can, fecha, numeros)
 
 def compactar_delta(delta):
-    """
-    Agrupa por (lotería CANÓNICA, fecha, números) e intenta elegir
-    el mejor registro (prefiere el que tenga hora; si no, el más reciente por hora_scrapeo).
-    """
     grupos = {}
     for r in delta:
         k = _grupo_clave(r)
@@ -324,86 +294,166 @@ def compactar_delta(delta):
         if not prev:
             grupos[k] = r
             continue
-        # Preferir el que tiene hora
         h_prev = (prev.get('hora') or '').strip()
-        h_new = (r.get('hora') or '').strip()
+        h_new  = (r.get('hora') or '').strip()
         if h_prev and not h_new:
-            pass  # deja prev
+            pass
         elif (not h_prev) and h_new:
             grupos[k] = r
         else:
-            # si ambos tienen (o ninguno), elegir por hora_scrapeo más reciente
             if (r.get('hora_scrapeo') or '') > (prev.get('hora_scrapeo') or ''):
                 grupos[k] = r
     return list(grupos.values())
 
-# ========== MAIN ==========
+# ---------- FCM ----------
+def _get_fcm_credentials():
+    """Lee JSON completo desde FCM_SERVICE_ACCOUNT_JSON o ruta en GOOGLE_APPLICATION_CREDENTIALS."""
+    SCOPES = ['https://www.googleapis.com/auth/firebase.messaging']
+    env_json = os.getenv("FCM_SERVICE_ACCOUNT_JSON")
+    if env_json:
+        try:
+            info = json.loads(env_json)
+            return service_account.Credentials.from_service_account_info(info, scopes=SCOPES)
+        except Exception as e:
+            print(f"⚠️ SA en env inválida: {e}")
+    sa_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "")
+    if sa_path and os.path.isfile(sa_path):
+        try:
+            return service_account.Credentials.from_service_account_file(sa_path, scopes=SCOPES)
+        except Exception as e:
+            print(f"⚠️ SA por archivo inválida: {e}")
+    print("❌ SA: no encontrada")
+    return None
+
+def enviar_fcm_v1_data(topic: str, data: dict, collapse_key: str, ttl_seconds: int = 900):
+    """DATA-ONLY (sin 'notification') para que el cliente pueda filtrar; colapsa en tránsito."""
+    creds = _get_fcm_credentials()
+    if not creds:
+        print("⚠️ FCM omitido: credenciales no disponibles.")
+        return
+    req = google.auth.transport.requests.Request()
+    creds.refresh(req)
+    token = creds.token
+
+    url = f"https://fcm.googleapis.com/v1/projects/{PROJECT_ID}/messages:send"
+    message = {
+        "message": {
+            "topic": topic,
+            "data": data,
+            "android": {
+                "ttl": f"{ttl_seconds}s",
+                "priority": "HIGH",
+                "collapse_key": collapse_key,
+            }
+        }
+    }
+    r = requests.post(url, headers={
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json",
+    }, json=message, timeout=15)
+    if r.status_code >= 300:
+        print(f"⚠️ Error FCM {r.status_code}: {r.text}")
+    else:
+        print(f"✅ FCM enviado a /topics/{topic}")
+
+# ---------- Cache de envíos (idempotencia) ----------
+SENT_CACHE = "sent_cache.json"
+
+def load_sent_cache():
+    try:
+        with open(SENT_CACHE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+def save_sent_cache(cache: dict):
+    now = datetime.now(TZ_RD).timestamp()
+    # purga > 3 días
+    cache = {k:v for k,v in cache.items() if now - float(v) < 3*24*3600}
+    with open(SENT_CACHE, "w", encoding="utf-8") as f:
+        json.dump(cache, f)
+
+# ---------- MAIN ----------
 def main():
     print("🔍 Buscando en loteriasdominicanas.com...")
     resultados_ld = scrapear_loterias_dominicanas()
-    print(f"✅ {len(resultados_ld)} resultados encontrados en loteriasdominicanas.com")
+    print(f"✅ {len(resultados_ld)} resultados en loteriasdominicanas.com")
 
     print("🔍 Buscando en tusnumerosrd.com...")
     resultados_tn = scrapear_tusnumerosrd()
-    print(f"✅ {len(resultados_tn)} resultados encontrados en tusnumerosrd.com")
+    print(f"✅ {len(resultados_tn)} resultados en tusnumerosrd.com")
 
-    nuevos_resultados = resultados_ld + resultados_tn
+    nuevos = resultados_ld + resultados_tn
 
-    if nuevos_resultados:
-        historico = cargar_historico()
-        nuevos_agregados = _contar_nuevos_exclusivos(historico, nuevos_resultados)
-        delta = delta_nuevos(historico, nuevos_resultados)
+    # 1) SOLO HOY (RD)
+    solo_hoy = []
+    for r in nuevos:
+        dt = parse_dt(r)
+        if dt and is_today(dt):
+            r['_dt'] = dt
+            solo_hoy.append(r)
 
-        # === SOLO ESTA LÍNEA ES LA CLAVE: compacta el delta para no duplicar por "hora" ===
-        delta = compactar_delta(delta)
+    if not solo_hoy:
+        print("⚠️ No hay resultados de HOY para enviar.")
+    # 2) Persistencia del archivo público (guardamos lo de hoy sobre histórico)
+    historico = cargar_historico()
+    delta = delta_nuevos(historico, solo_hoy)
+    delta = compactar_delta(delta)
 
-        resultados_actualizados = evitar_duplicados(historico, nuevos_resultados)
+    resultados_actualizados = evitar_duplicados(historico, solo_hoy)
+    with open("resultados_combinados.json", "w", encoding="utf-8") as f:
+        json.dump({
+            "generado": datetime.now(TZ_RD).isoformat(),
+            "resultados": resultados_actualizados
+        }, f, indent=2, ensure_ascii=False)
+    print(f"📦 Guardados {len(resultados_actualizados)} en resultados_combinados.json")
+    print(f"➕ Nuevos HOY a enviar: {len(delta)}")
 
-        with open("resultados_combinados.json", "w", encoding="utf-8") as f:
-            json.dump(resultados_actualizados, f, indent=4, ensure_ascii=False)
+    if not delta:
+        return
 
-        print(f"📦 Se guardaron {len(resultados_actualizados)} resultados en 'resultados_combinados.json'")
-        print(f"➕ Nuevos resultados agregados: {len(delta)}")  # reflejamos los realmente nuevos a enviar
+    # 3) Idempotencia entre corridas
+    sent_cache = load_sent_cache()
 
-        if delta:
-            # Agrupa por lotería CANÓNICA
-            por_loteria = {}
-            for r in delta:
-                lot_can = canonicaliza_loteria(r['loteria'])
-                por_loteria.setdefault(lot_can, []).append(r)
+    # 4) Envío por lotería canónica (toma el más reciente por _dt)
+    por_loteria = {}
+    for r in delta:
+        lot_can = canonicaliza_loteria(r['loteria'])
+        por_loteria.setdefault(lot_can, []).append(r)
 
-            # Por cada lotería: envía a específico y global con el mismo dedupe_key (SIN hora)
-            for lot, items in por_loteria.items():
-                last = items[-1]  # más reciente de esta corrida
-                numeros = last.get('numeros') or []
-                numeros_txt = " ".join(numeros)
-                fecha_txt = last.get('fecha') or ""
-                hora_txt = last.get('hora') or ""
-                top = topic_seguro(lot)
+    for lot, items in por_loteria.items():
+        items.sort(key=lambda x: x.get('_dt') or datetime.min.replace(tzinfo=TZ_RD))
+        last = items[-1]
+        fecha_txt = last.get('fecha') or ""
+        hora_txt  = last.get('hora') or ""
+        numeros   = last.get('numeros') or []
+        nums_txt  = "·".join([str(x).zfill(2) for x in numeros])
 
-                dedupe_key = make_dedupe_key(lot, numeros, fecha_txt, hora_txt)
+        dedupe_id = f"{topic_seguro(lot)}|{nums_key(numeros)}|{fecha_txt}"
+        if dedupe_id in sent_cache:
+            print(f"↩️ Ya enviado (cache): {dedupe_id}")
+            continue
 
-                titulo = f"Resultados de {lot}"
-                cuerpo = f"{numeros_txt} • {fecha_txt}" + (f" · {hora_txt}" if hora_txt else "")
+        payload = {
+            "type": "resultado",
+            "loteria": lot,
+            "fecha": fecha_txt,
+            "hora": hora_txt,
+            "numeros": nums_txt,
+            "fuente": last.get('fuente', ''),
+        }
 
-                payload = {
-                    "type": "resultado",
-                    "loteria": lot,
-                    "fecha": fecha_txt,
-                    "hora": hora_txt,
-                    "numeros": ",".join(numeros),
-                    "fuente": last.get('fuente', ''),
-                    "dedupe_key": dedupe_key,
-                }
+        topic_especifico = topic_seguro(lot)
+        collapse = f"{topic_especifico}_{fecha_txt}"
 
-                # a) tópico específico
-                enviar_fcm_v1(titulo, cuerpo, top, data=payload)
+        # a) tópico específico
+        enviar_fcm_v1_data(topic_especifico, payload, collapse_key=collapse, ttl_seconds=900)
+        # b) tópico global
+        enviar_fcm_v1_data(TOPIC_GLOBAL, payload, collapse_key=collapse, ttl_seconds=900)
 
-                # b) tópico global (para usuarios sin favoritas)
-                enviar_fcm_v1(titulo, cuerpo, TOPIC_GLOBAL, data=payload)
+        sent_cache[dedupe_id] = datetime.now(TZ_RD).timestamp()
 
-    else:
-        print("⚠️ No se pudo extraer ningún resultado de ninguna fuente.")
+    save_sent_cache(sent_cache)
 
 if __name__ == "__main__":
     main()
