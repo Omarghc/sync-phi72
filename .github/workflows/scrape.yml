@@ -21,7 +21,7 @@ jobs:
     timeout-minutes: 20
     env:
       TZ: "America/Santo_Domingo"
-      TARGET_API_PATH: "docs/resultados_combinados.json"  # ÚNICO archivo a publicar
+      TARGET_API_PATH: "docs/resultados_combinados.json"
 
     steps:
       - name: Checkout repo (main)
@@ -64,7 +64,7 @@ jobs:
           set -euxo pipefail
           python -m playwright install --with-deps chromium
 
-      # ✅ Trae histórico previo para que el scraper calcule el delta correctamente
+      # Trae el histórico previo para que el scraper calcule delta correctamente
       - name: Preparar histórico local para scraper
         run: |
           set -euxo pipefail
@@ -80,10 +80,10 @@ jobs:
           FCM_SERVICE_ACCOUNT_JSON: ${{ secrets.FCM_SERVICE_ACCOUNT_JSON }}
         run: |
           set -euxo pipefail
-          xvfb-run -a python scraper.py
+          xvfb-run -a python scraper/main.py
           echo "Scraper terminado."
 
-      # ⬇️ Publica SOLO en docs/resultados_combinados.json (merge + dedupe)
+      # Publica SOLO en docs/resultados_combinados.json (merge + dedupe)
       - name: Publicar histórico en $TARGET_API_PATH (merge + dedupe)
         run: |
           python - <<'PY'
@@ -92,11 +92,18 @@ jobs:
           now_utc = datetime.datetime.utcnow().isoformat()+"Z"
 
           target = pathlib.Path("${{ env.TARGET_API_PATH }}")  # docs/resultados_combinados.json
-          root_a = pathlib.Path("resultados_combinados.json")
-          root_b = pathlib.Path("scraper/data/resultados_combinados.json")
+          # Busca la salida tanto en raíz como en scraper/
+          candidates = [
+            pathlib.Path("resultados_combinados.json"),
+            pathlib.Path("scraper/resultados_combinados.json"),
+            pathlib.Path("scraper/data/resultados_combinados.json"),
+          ]
+          src = None
+          for p in candidates:
+            if p.exists():
+              if (src is None) or (p.stat().st_mtime > src.stat().st_mtime):
+                src = p
 
-          sources = [p for p in (root_a, root_b) if p.exists()]
-          src = max(sources, key=lambda p: p.stat().st_mtime, default=None)
           new_items = []
           if src:
             try:
