@@ -9,9 +9,9 @@ from google.oauth2 import service_account
 import google.auth.transport.requests
 
 # === Proyecto / Topics ===
-PROJECT_ID = "bancard-a52ba"            # <-- tu proyecto
-TOPIC_GLOBAL = "resultados_loteria"     # usuarios sin favoritas
-ANDROID_CHANNEL_ID = "resultados_loteria_high"  # Debe existir en tu app (Manifest)
+PROJECT_ID = "bancard-a52ba"
+TOPIC_GLOBAL = "resultados_loteria"       # usuarios sin favoritas
+ANDROID_CHANNEL_ID = "resultados_loteria_high"  # Debe existir en la app
 
 # === TZ RD (sin DST) ===
 TZ_RD = timezone(timedelta(hours=-4), name="America/Santo_Domingo")
@@ -136,7 +136,7 @@ def parse_dt(item) -> datetime|None:
                 if ampm == 'AM' and hh == 12: hh = 0
         return datetime(y, mo, d, hh, mm, tzinfo=TZ_RD)
 
-    # dd-MM-yyyy HH:mm  (ojo: ya normalizamos arriba a yyyy-MM-dd si venía con hora)
+    # dd-MM-yyyy HH:mm
     m = re.match(r'^(\d{2})-(\d{2})-(\d{4})\s+(\d{2}):(\d{2})$', raw_fecha)
     if m:
         d, mo, y, hh, mm = map(int, m.groups())
@@ -194,7 +194,7 @@ def scrapear_loterias_dominicanas():
                     if not (fecha_tag and nombre_tag and numeros_tag):
                         continue
                     fecha = fecha_tag.get_text(strip=True)
-                    fecha_normalizada = normaliza_fecha(fecha)  # -> yyyy-MM-dd si venía con hora
+                    fecha_normalizada = normaliza_fecha(fecha)
                     nombre = nombre_tag.get_text(strip=True)
                     numeros = [n.get_text(strip=True) for n in numeros_tag.select("span.score")]
 
@@ -351,7 +351,7 @@ def enviar_fcm_v1(title: str, body: str, topic: str, data: dict,
     message = {
         "message": {
             "topic": topic,
-            "notification": {  # <- esto hace que Android muestre en background
+            "notification": {  # Android la muestra si la app está en background
                 "title": title,
                 "body": body
             },
@@ -394,7 +394,7 @@ def save_sent_cache(cache: dict):
         json.dump(cache, f)
 
 def _clean_for_json(items):
-    """Copia registros quitando campos internos (p. ej. _dt) antes de serializar."""
+    """Quita campos internos (_dt) antes de serializar al archivo público."""
     clean = []
     for r in items:
         if isinstance(r, dict):
@@ -434,7 +434,7 @@ def main():
     delta = compactar_delta(delta)
 
     resultados_actualizados = evitar_duplicados(historico, solo_hoy)
-    resultados_a_grabar = _clean_for_json(resultados_actualizados)   # ❗ evita datetime en JSON
+    resultados_a_grabar = _clean_for_json(resultados_actualizados)
 
     with open("resultados_combinados.json", "w", encoding="utf-8") as f:
         json.dump({
@@ -462,7 +462,7 @@ def main():
         fecha_txt = last.get('fecha') or ""
         hora_txt  = last.get('hora') or ""
         numeros   = last.get('numeros') or []
-        nums_txt  = " ".join([str(x).zfill(2) for x in numeros])  # preserva ceros a la izquierda
+        nums_txt  = " ".join([str(x).zfill(2) for x in numeros])  # preserva ceros
 
         dedupe_id = f"{topic_seguro(lot)}|{nums_key(numeros)}|{fecha_txt}"
         if dedupe_id in sent_cache:
@@ -481,8 +481,8 @@ def main():
         title = f"Resultados de {lot}"
         body  = f"{nums_txt} • {fecha_txt}" + (f" · {hora_txt}" if hora_txt else "")
 
-        topic_especifico = topic_seguro(lot)                 # canónico
-        topic_alias = topic_seguro(last.get('loteria') or lot)  # alias crudo de la fuente
+        topic_especifico = topic_seguro(lot)                   # canónico
+        topic_alias = topic_seguro(last.get('loteria') or lot) # alias crudo tal como viene
         collapse = f"{topic_especifico}_{fecha_txt}"
         tag = dedupe_id  # estable por lotería+fecha+números
 
@@ -490,7 +490,7 @@ def main():
         enviar_fcm_v1(title, body, topic_especifico, payload,
                       collapse_key=collapse, tag=tag, ttl_seconds=900)
 
-        # b) también al alias “raw” por compatibilidad
+        # b) alias “raw” por compatibilidad con suscripciones antiguas
         if topic_alias != topic_especifico:
             enviar_fcm_v1(title, body, topic_alias, payload,
                           collapse_key=collapse, tag=tag, ttl_seconds=900)
