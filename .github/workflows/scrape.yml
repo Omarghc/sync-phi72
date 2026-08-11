@@ -4,7 +4,9 @@ on:
   schedule:
     # Evita el pico del :00; corre cada 10 min exactos (UTC)
     - cron: "2,12,22,32,42,52 * * * *"
+
   workflow_dispatch: {}
+
   repository_dispatch:
     types: [kick]
 
@@ -13,12 +15,13 @@ permissions:
 
 concurrency:
   group: scraper-production
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
     env:
       TZ: "America/Santo_Domingo"
       TARGET_API_PATH: "docs/resultados_combinados.json"
@@ -51,108 +54,412 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-playwright-
 
-      - name: Instalar dependencias Python (incluye Playwright)
+      - name: Instalar dependencias Python
         run: |
           set -euxo pipefail
-          python -V
-          pip install --upgrade pip
-          pip install playwright beautifulsoup4 requests google-auth google-auth-httplib2 google-auth-oauthlib
-          if [ -f scraper/requirements.txt ]; then pip install -r scraper/requirements.txt; fi
 
-      - name: Instalar Playwright + Chromium (usa cache si existe)
+          python -V
+          python -m pip install --upgrade pip
+
+          pip install \
+            playwright \
+            beautifulsoup4 \
+            requests \
+            google-auth \
+            google-auth-httplib2 \
+            google-auth-oauthlib
+
+          if [ -f scraper/requirements.txt ]; then
+            pip install -r scraper/requirements.txt
+          fi
+
+      - name: Instalar Playwright + Chromium
         run: |
           set -euxo pipefail
           python -m playwright install --with-deps chromium
 
-      # Trae el histórico previo para que el scraper calcule delta correctamente
+      # main.py utiliza este archivo como histórico anterior.
       - name: Preparar histórico local para scraper
         run: |
           set -euxo pipefail
+
           if [ -f "${{ env.TARGET_API_PATH }}" ]; then
-            cp -f "${{ env.TARGET_API_PATH }}" resultados_combinados.json
-            echo "Histórico copiado a resultados_combinados.json"
+            cp -f \
+              "${{ env.TARGET_API_PATH }}" \
+              resultados_combinados.json
+
+            echo "✅ Histórico copiado a resultados_combinados.json"
           else
-            echo "No hay histórico previo en ${{ env.TARGET_API_PATH }}; se generará desde cero."
+            echo "⚠️ No existe histórico previo."
+            echo "El scraper generará resultados_combinados.json desde cero."
           fi
 
-      - name: Ejecutar scraper (headless) + FCM via secret
+      - name: Ejecutar scraper + FCM
         env:
           FCM_SERVICE_ACCOUNT_JSON: ${{ secrets.FCM_SERVICE_ACCOUNT_JSON }}
         run: |
           set -euxo pipefail
+
           xvfb-run -a python scraper/main.py
-          echo "Scraper terminado."
 
-      # Publica SOLO en docs/resultados_combinados.json (merge + dedupe)
-      - name: Publicar histórico en $TARGET_API_PATH (merge + dedupe)
+          echo "✅ Scraper terminado correctamente."
+
+      # ---------------------------------------------------------
+      # BLINDAJE 1
+      # main.py DEBE haber producido un JSON válido.
+      # ---------------------------------------------------------
+      - name: Validar salida del scraper
         run: |
+          set -euxo pipefail
+
           python - <<'PY'
-          import json, pathlib, datetime, zoneinfo
-          TZ = zoneinfo.ZoneInfo("America/Santo_Domingo")
-          now_utc = datetime.datetime.utcnow().isoformat()+"Z"
+          import json
+          import pathlib
+          import sys
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
 
-          target = pathlib.Path("${{ env.TARGET_API_PATH }}")  # docs/resultados_combinados.json
-          # Busca la salida tanto en raíz como en scraper/
-          candidates = [
-            pathlib.Path("resultados_combinados.json"),
-            pathlib.Path("scraper/resultados_combinados.json"),
-            pathlib.Path("scraper/data/resultados_combinados.json"),
+          path = pathlib.Path("resultados_combinados.json")
+
+          print(f"🔎 Validando: {path}")
+
+          if not path.exists():
+              print("❌ resultados_combinados.json NO existe.")
+              sys.exit(1)
+
+          if path.stat().st_size < 10:
+              print(
+                  f"❌ resultados_combinados.json es demasiado pequeño: "
+                  f"{path.stat().st_size} bytes"
+              )
+              sys.exit(1)
+
+          try:
+              obj = json.loads(
+                  path.read_text(encoding="utf-8")
+              )
+          except Exception as e:
+              print(f"❌ JSON inválido: {repr(e)}")
+              sys.exit(1)
+
+          if not isinstance(obj, dict):
+              print("❌ El JSON raíz debe ser un objeto.")
+              sys.exit(1)
+
+          resultados = obj.get("resultados")
+
+          if not isinstance(resultados, list):
+              print("❌ El campo 'resultados' no es una lista.")
+              sys.exit(1)
+
+          if len(resultados) == 0:
+              print("❌ El JSON contiene 0 resultados.")
+              sys.exit(1)
+
+          requeridos = {
+              "loteria",
+              "numeros",
+              "fecha"
+          }
+
+          invalidos = []
+
+          for i, resultado in enumerate(resultados):
+              if not isinstance(resultado, dict):
+                  invalidos.append(
+                      (i, "registro no es objeto")
+                  )
+                  continue
+
+              faltantes = [
+                  campo
+                  for campo in requeridos
+                  if campo not in resultado
+              ]
+
+              if faltantes:
+                  invalidos.append(
+                      (
+                          i,
+                          "faltan: " + ",".join(faltantes)
+                      )
+                  )
+                  continue
+
+              numeros = resultado.get("numeros")
+
+              if not isinstance(numeros, list):
+                  invalidos.append(
+                      (i, "numeros no es lista")
+                  )
+
+          if invalidos:
+              print(
+                  f"❌ Se encontraron "
+                  f"{len(invalidos)} registros inválidos."
+              )
+
+              for item in invalidos[:10]:
+                  print(
+                      f"   índice={item[0]} "
+                      f"problema={item[1]}"
+                  )
+
+              sys.exit(1)
+
+          tz_rd = ZoneInfo(
+              "America/Santo_Domingo"
+          )
+
+          hoy = datetime.now(
+              tz_rd
+          ).strftime("%Y-%m-%d")
+
+          de_hoy = [
+              r
+              for r in resultados
+              if str(
+                  r.get("fecha", "")
+              ).strip() == hoy
           ]
-          src = None
-          for p in candidates:
-            if p.exists():
-              if (src is None) or (p.stat().st_mtime > src.stat().st_mtime):
-                src = p
 
-          new_items = []
-          if src:
-            try:
-              obj = json.loads(src.read_text(encoding="utf-8"))
-              new_items = obj if isinstance(obj, list) else obj.get("resultados", [])
-            except Exception:
-              new_items = []
+          print(
+              f"✅ JSON válido: "
+              f"{len(resultados)} registros totales."
+          )
 
-          old_items = []
-          if target.exists():
-            try:
-              obj = json.loads(target.read_text(encoding="utf-8"))
-              old_items = obj if isinstance(obj, list) else obj.get("resultados", [])
-            except Exception:
-              old_items = []
+          print(
+              f"📅 Registros correspondientes "
+              f"a HOY ({hoy}): {len(de_hoy)}"
+          )
 
-          def key_nohora(r):
-            return (str(r.get("loteria","")).strip(),
-                    tuple(r.get("numeros") or []),
-                    str(r.get("fecha","")).strip())
+          print(
+              f"🕐 generado: "
+              f"{obj.get('generado')}"
+          )
 
-          index = { key_nohora(r): i for i, r in enumerate(old_items) }
-          merged = list(old_items)
+          # main.py ya valida esto,
+          # pero esta es una segunda barrera.
+          if len(de_hoy) == 0:
+              print(
+                  "❌ El JSON no contiene ningún "
+                  "resultado de hoy."
+              )
+              sys.exit(1)
 
-          for r in new_items:
-            k = key_nohora(r)
-            if k in index:
-              i = index[k]
-              old = merged[i]
-              h_old = (old.get("hora") or "").strip()
-              h_new = (r.get("hora")  or "").strip()
-              if (not h_old) and h_new:
-                merged[i] = r
-            else:
-              index[k] = len(merged)
-              merged.append(r)
+          print("✅ Guardrail del scraper superado.")
+          PY
 
-          target.parent.mkdir(parents=True, exist_ok=True)
-          payload = {"generado": now_utc, "resultados": merged}
-          target.write_text(json.dumps(payload, ensure_ascii=False, separators=(",",":")), encoding="utf-8")
-          print(f"[API] Escrito {target} con TOTAL={len(merged)} registros (leídos {len(new_items)} nuevos)")
+      # ---------------------------------------------------------
+      # YA NO HACEMOS OTRO MERGE.
+      #
+      # main.py:
+      #   histórico
+      #      +
+      #   resultados nuevos
+      #      +
+      #   dedupe
+      #      ↓
+      # resultados_combinados.json
+      #
+      # GitHub simplemente publica ESA salida.
+      # ---------------------------------------------------------
+      - name: Publicar API
+        run: |
+          set -euxo pipefail
+
+          python - <<'PY'
+          import json
+          import os
+          import pathlib
+          import shutil
+          import sys
+
+          src = pathlib.Path(
+              "resultados_combinados.json"
+          )
+
+          target = pathlib.Path(
+              "${{ env.TARGET_API_PATH }}"
+          )
+
+          if not src.exists():
+              print(
+                  "❌ No existe la salida "
+                  "resultados_combinados.json"
+              )
+              sys.exit(1)
+
+          # Validación adicional antes de publicar.
+          try:
+              obj = json.loads(
+                  src.read_text(
+                      encoding="utf-8"
+                  )
+              )
+          except Exception as e:
+              print(
+                  f"❌ No se puede publicar "
+                  f"un JSON inválido: {repr(e)}"
+              )
+              sys.exit(1)
+
+          resultados = obj.get(
+              "resultados",
+              []
+          )
+
+          if not resultados:
+              print(
+                  "❌ No se publicará una API "
+                  "sin resultados."
+              )
+              sys.exit(1)
+
+          target.parent.mkdir(
+              parents=True,
+              exist_ok=True
+          )
+
+          tmp = target.with_suffix(
+              target.suffix + ".tmp"
+          )
+
+          shutil.copyfile(
+              src,
+              tmp
+          )
+
+          # Confirma que la copia sigue siendo válida.
+          try:
+              verificacion = json.loads(
+                  tmp.read_text(
+                      encoding="utf-8"
+                  )
+              )
+          except Exception as e:
+              try:
+                  tmp.unlink()
+              except OSError:
+                  pass
+
+              print(
+                  f"❌ La copia temporal "
+                  f"resultó inválida: {repr(e)}"
+              )
+              sys.exit(1)
+
+          if not verificacion.get(
+              "resultados"
+          ):
+              try:
+                  tmp.unlink()
+              except OSError:
+                  pass
+
+              print(
+                  "❌ La copia temporal "
+                  "no contiene resultados."
+              )
+              sys.exit(1)
+
+          # Reemplazo atómico.
+          os.replace(
+              tmp,
+              target
+          )
+
+          print(
+              f"✅ API publicada en {target}"
+          )
+
+          print(
+              f"📦 Total publicado: "
+              f"{len(verificacion['resultados'])}"
+          )
+          PY
+
+      # ---------------------------------------------------------
+      # BLINDAJE 2
+      # Comprueba exactamente lo que quedará en /docs.
+      # ---------------------------------------------------------
+      - name: Verificar API publicada
+        run: |
+          set -euxo pipefail
+
+          python - <<'PY'
+          import json
+          import pathlib
+          import sys
+
+          target = pathlib.Path(
+              "${{ env.TARGET_API_PATH }}"
+          )
+
+          if not target.exists():
+              print(
+                  f"❌ No existe {target}"
+              )
+              sys.exit(1)
+
+          try:
+              obj = json.loads(
+                  target.read_text(
+                      encoding="utf-8"
+                  )
+              )
+          except Exception as e:
+              print(
+                  f"❌ API publicada inválida: "
+                  f"{repr(e)}"
+              )
+              sys.exit(1)
+
+          resultados = obj.get(
+              "resultados",
+              []
+          )
+
+          if not resultados:
+              print(
+                  "❌ API publicada vacía."
+              )
+              sys.exit(1)
+
+          print(
+              f"✅ API final verificada."
+          )
+
+          print(
+              f"📊 Registros: "
+              f"{len(resultados)}"
+          )
+
+          print(
+              f"🕐 Generado: "
+              f"{obj.get('generado')}"
+          )
+
+          print("🔎 Últimos 5 registros:")
+
+          for r in resultados[-5:]:
+              print(
+                  f"   {r.get('loteria')} | "
+                  f"{r.get('numeros')} | "
+                  f"{r.get('fecha')} | "
+                  f"{r.get('hora')}"
+              )
           PY
 
       - name: Guardrail - no commitear workflows
         run: |
           set -e
+
           if git diff --name-only | grep -qE '^\.github/workflows/'; then
+            echo "⚠️ Cambio inesperado en workflows. Restaurando..."
             git checkout -- .github/workflows
           fi
+
           if git diff --cached --name-only | grep -qE '^\.github/workflows/'; then
             echo "::error::Se detectaron workflows en el stage. Abortando push."
             exit 1
@@ -161,25 +468,49 @@ jobs:
       - name: Commit & push (API + sent_cache)
         run: |
           set -euxo pipefail
-          git config user.name  "github-actions[bot]"
+
+          git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
           git fetch origin main
+
           git reset --soft origin/main
 
-          git add -f "${{ env.TARGET_API_PATH }}" sent_cache.json || true
+          git add -f "${{ env.TARGET_API_PATH }}"
+
+          if [ -f sent_cache.json ]; then
+            git add -f sent_cache.json
+          fi
 
           if git diff --cached --quiet; then
-            echo "Nada que commitear"
+            echo "✅ Nada nuevo que commitear."
             exit 0
           fi
 
-          git commit -m "chore: actualizar API ($(date -u +'%Y-%m-%dT%H:%M:%SZ'))"
+          echo "📋 Archivos que serán publicados:"
+          git diff --cached --name-only
+
+          git commit \
+            -m "chore: actualizar API ($(date -u +'%Y-%m-%dT%H:%M:%SZ'))"
+
           if ! git push origin HEAD:main; then
+            echo "⚠️ Push rechazado. Reintentando sobre main actualizado..."
+
             git fetch origin main
+
             git reset --soft origin/main
-            git add -f "${{ env.TARGET_API_PATH }}" sent_cache.json || true
-            git commit -m "chore: actualizar API (retry $(date -u +'%Y-%m-%dT%H:%M:%SZ'))" || true
+
+            git add -f "${{ env.TARGET_API_PATH }}"
+
+            if [ -f sent_cache.json ]; then
+              git add -f sent_cache.json
+            fi
+
+            git commit \
+              -m "chore: actualizar API (retry $(date -u +'%Y-%m-%dT%H:%M:%SZ'))" \
+              || true
+
             git push origin HEAD:main
           fi
