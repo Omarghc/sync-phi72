@@ -471,17 +471,32 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-          git fetch origin main
+          # Limpiar únicamente el staging sin tocar el working tree.
+          git restore --staged . || true
 
-          git reset --soft origin/main
-
+          # Agregar SOLO los archivos que este Action debe publicar.
           git add -f "${{ env.TARGET_API_PATH }}"
 
           if [ -f sent_cache.json ]; then
             git add -f sent_cache.json
+          fi
+
+          echo "📋 Archivos staged:"
+          git diff --cached --name-only
+
+          # Guardrail: solo se permiten la API y sent_cache.json.
+          INVALID_FILES=$(
+            git diff --cached --name-only |
+            grep -vE '^(docs/resultados_combinados\.json|sent_cache\.json)$' \
+            || true
+          )
+
+          if [ -n "$INVALID_FILES" ]; then
+            echo "::error::Se intentaron incluir archivos no autorizados:"
+            echo "$INVALID_FILES"
+            exit 1
           fi
 
           if git diff --cached --quiet; then
@@ -489,28 +504,50 @@ jobs:
             exit 0
           fi
 
-          echo "📋 Archivos que serán publicados:"
-          git diff --cached --name-only
-
           git commit \
             -m "chore: actualizar API ($(date -u +'%Y-%m-%dT%H:%M:%SZ'))"
 
-          if ! git push origin HEAD:main; then
-            echo "⚠️ Push rechazado. Reintentando sobre main actualizado..."
-
-            git fetch origin main
-
-            git reset --soft origin/main
-
-            git add -f "${{ env.TARGET_API_PATH }}"
-
-            if [ -f sent_cache.json ]; then
-              git add -f sent_cache.json
-            fi
-
-            git commit \
-              -m "chore: actualizar API (retry $(date -u +'%Y-%m-%dT%H:%M:%SZ'))" \
-              || true
-
-            git push origin HEAD:main
+          # Primer intento de push.
+          if git push origin HEAD:main; then
+            echo "✅ API publicada correctamente."
+            exit 0
           fi
+
+          # Si main avanzó mientras corría este workflow,
+          # actualizamos mediante rebase y reintentamos.
+          echo "⚠️ main cambió durante la ejecución."
+          echo "🔄 Haciendo fetch + rebase y reintentando..."
+
+          git fetch origin main
+          git rebase origin/main
+
+          echo "📋 Archivos del commit después del rebase:"
+          git diff-tree --no-commit-id --name-only -r HEAD
+
+          # Seguridad final: este Action nunca debe modificar workflows.
+          if git diff-tree \
+            --no-commit-id \
+            --name-only \
+            -r HEAD |
+            grep -qE '^\.github/workflows/'; then
+
+            echo "::error::El commit intenta modificar un workflow."
+            exit 1
+          fi
+
+          # Seguridad final adicional: tampoco permitir otros archivos.
+          INVALID_COMMIT_FILES=$(
+            git diff-tree --no-commit-id --name-only -r HEAD |
+            grep -vE '^(docs/resultados_combinados\.json|sent_cache\.json)$' \
+            || true
+          )
+
+          if [ -n "$INVALID_COMMIT_FILES" ]; then
+            echo "::error::El commit contiene archivos no autorizados después del rebase:"
+            echo "$INVALID_COMMIT_FILES"
+            exit 1
+          fi
+
+          git push origin HEAD:main
+
+          echo "✅ API publicada correctamente después del rebase."
