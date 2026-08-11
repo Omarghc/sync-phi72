@@ -23,28 +23,56 @@ MESES = {
 
 # ---------- Utilidades ----------
 def normaliza_fecha(fecha: str) -> str:
-    """Devuelve yyyy-MM-dd cuando es posible."""
+    """
+    Devuelve yyyy-MM-dd cuando es posible.
+    Mantiene compatibilidad con los formatos originales y agrega tolerancia
+    a espacios/NBSP, año explícito y meses con acentos.
+    """
     if not fecha:
         return fecha
-    fecha = fecha.strip()
 
-    # dd-MM-yyyy HH:mm  -> yyyy-MM-dd
-    m = re.match(r"^(\d{2})-(\d{2})-(\d{4})\s+\d{2}:\d{2}$", fecha)
+    # Limpia espacios raros que pueden venir del HTML.
+    fecha = str(fecha).replace("\xa0", " ")
+    fecha = re.sub(r"\s+", " ", fecha).strip()
+
+    # dd-MM-yyyy HH:mm -> yyyy-MM-dd
+    m = re.fullmatch(r"(\d{1,2})-(\d{1,2})-(\d{4})\s+\d{1,2}:\d{2}", fecha)
     if m:
-        return f"{m.group(3)}-{m.group(2)}-{m.group(1)}"
+        dia, mes, anio = int(m.group(1)), int(m.group(2)), int(m.group(3))
+        try:
+            return datetime(anio, mes, dia, tzinfo=TZ_RD).strftime("%Y-%m-%d")
+        except ValueError:
+            return fecha
 
     # dd-MM-yyyy -> yyyy-MM-dd
-    m = re.match(r"^(\d{2})-(\d{2})-(\d{4})$", fecha)
+    m = re.fullmatch(r"(\d{1,2})-(\d{1,2})-(\d{4})", fecha)
     if m:
-        return f"{m.group(3)}-{m.group(2)}-{m.group(1)}"
+        dia, mes, anio = int(m.group(1)), int(m.group(2)), int(m.group(3))
+        try:
+            return datetime(anio, mes, dia, tzinfo=TZ_RD).strftime("%Y-%m-%d")
+        except ValueError:
+            return fecha
 
-    # "15 julio" -> yyyy-07-15 (año actual)
-    m = re.match(r"^(\d{1,2})\s+([a-zA-ZáéíóúÁÉÍÓÚñÑ]+)$", fecha)
+    # "15 julio" o "15 julio 2026" -> yyyy-07-15
+    m = re.fullmatch(
+        r"(\d{1,2})\s+([a-zA-ZáéíóúÁÉÍÓÚñÑ]+)(?:\s+(\d{4}))?",
+        fecha
+    )
     if m:
-        hoy = datetime.now(TZ_RD)
         dia = int(m.group(1))
-        mes = MESES.get(m.group(2).lower(), "01")
-        return f"{hoy.year}-{mes}-{dia:02d}"
+        mes_txt = _plain_lower(m.group(2))
+        mes = MESES.get(mes_txt)
+
+        # Nunca inventar enero si el mes no se reconoce.
+        if not mes:
+            return fecha
+
+        anio = int(m.group(3)) if m.group(3) else datetime.now(TZ_RD).year
+
+        try:
+            return datetime(anio, int(mes), dia, tzinfo=TZ_RD).strftime("%Y-%m-%d")
+        except ValueError:
+            return fecha
 
     return fecha
 
@@ -169,97 +197,304 @@ def scrapear_loterias_dominicanas():
     resultados = []
     try:
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
-            page = browser.new_page()
-            page.goto("https://loteriasdominicanas.com/pagina/ultimos-resultados", timeout=60000)
-            page.wait_for_selector("div.game-info.p-2", timeout=20000)
+            browser = p.chromium.launch(
+                headless=True,
+                args=["--no-sandbox", "--disable-dev-shm-usage"]
+            )
+            page = browser.new_page(
+                viewport={"width": 1280, "height": 1600},
+                user_agent=(
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/131.0.0.0 Safari/537.36"
+                )
+            )
+
+            response = page.goto(
+                "https://loteriasdominicanas.com/pagina/ultimos-resultados",
+                wait_until="domcontentloaded",
+                timeout=60000
+            )
+            if response:
+                print(f"🌐 loteriasdominicanas.com HTTP {response.status}")
+
+            page.wait_for_selector("div.game-info.p-2", timeout=25000)
             html = page.content()
-            soup = BeautifulSoup(html, 'html.parser')
+
+            if len(html) < 1000:
+                raise RuntimeError(
+                    f"HTML demasiado pequeño en loteriasdominicanas.com: {len(html)} bytes"
+                )
+
+            soup = BeautifulSoup(html, "html.parser")
             juegos = soup.select("div.game-info.p-2")
-            for juego in juegos:
+            print(f"📄 LoteriasDominicanas: {len(juegos)} bloques encontrados")
+
+            errores = 0
+
+            for indice, juego in enumerate(juegos):
                 try:
                     fecha_tag = juego.select_one(".session-date")
                     nombre_tag = juego.select_one(".game-title span")
                     numeros_tag = juego.find_next_sibling("div", class_="game-scores")
                     logo_div = juego.select_one("div.game-logo")
+
                     img_url = ""
                     if logo_div:
                         img_tag = logo_div.find("img")
                         if img_tag:
                             img_url = img_tag.get("src", "") or img_tag.get("data-src", "")
+
                     if img_url.startswith("/"):
                         img_url = "https://loteriasdominicanas.com" + img_url
                     img_url = sanitizar_logo(img_url)
 
                     if not (fecha_tag and nombre_tag and numeros_tag):
                         continue
-                    fecha = fecha_tag.get_text(strip=True)
+
+                    fecha = fecha_tag.get_text(" ", strip=True)
                     fecha_normalizada = normaliza_fecha(fecha)
-                    nombre = nombre_tag.get_text(strip=True)
-                    numeros = [n.get_text(strip=True) for n in numeros_tag.select("span.score")]
+                    nombre = nombre_tag.get_text(" ", strip=True)
+                    numeros = [
+                        n.get_text(strip=True)
+                        for n in numeros_tag.select("span.score")
+                        if n.get_text(strip=True)
+                    ]
+
+                    if not nombre or not numeros:
+                        continue
 
                     resultados.append({
-                        'fuente': 'loteriasdominicanas.com',
-                        'loteria': nombre,
-                        'img': img_url,
-                        'numeros': numeros,
-                        'fecha_original': fecha,
-                        'fecha': fecha_normalizada,
-                        'hora': None,  # esta fuente no trae hora
-                        'hora_scrapeo': datetime.now(TZ_RD).strftime('%Y-%m-%d %H:%M:%S')
+                        "fuente": "loteriasdominicanas.com",
+                        "loteria": nombre,
+                        "img": img_url,
+                        "numeros": numeros,
+                        "fecha_original": fecha,
+                        "fecha": fecha_normalizada,
+                        "hora": None,  # esta fuente no trae hora
+                        "hora_scrapeo": datetime.now(TZ_RD).strftime("%Y-%m-%d %H:%M:%S")
                     })
-                except Exception:
-                    continue
+
+                except Exception as e:
+                    errores += 1
+                    print(
+                        f"⚠️ Error procesando juego LoteriasDominicanas "
+                        f"#{indice}: {repr(e)}"
+                    )
+
             browser.close()
+
+            print(
+                f"✅ LoteriasDominicanas: {len(resultados)} resultados válidos"
+                + (f" | {errores} errores de fila" if errores else "")
+            )
+
     except Exception as e:
-        print(f"❌ Error loteriasdominicanas.com: {e}")
+        print(f"❌ Error loteriasdominicanas.com: {repr(e)}")
+
     return resultados
 
 def scrapear_tusnumerosrd():
     resultados = []
+
     try:
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
-            page = browser.new_page()
-            page.goto("https://www.tusnumerosrd.com/resultados.php", timeout=60000)
-            page.wait_for_timeout(6000)
+            browser = p.chromium.launch(
+                headless=True,
+                args=["--no-sandbox", "--disable-dev-shm-usage"]
+            )
+            page = browser.new_page(
+                viewport={"width": 1280, "height": 1600},
+                user_agent=(
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/131.0.0.0 Safari/537.36"
+                )
+            )
+
+            print("🌐 Abriendo tusnumerosrd.com...")
+
+            response = page.goto(
+                "https://www.tusnumerosrd.com/resultados.php",
+                wait_until="domcontentloaded",
+                timeout=60000
+            )
+
+            if response:
+                print(f"🌐 tusnumerosrd.com HTTP {response.status}")
+
+            # Espera el contenido que realmente necesitamos, no un tiempo fijo solamente.
+            try:
+                page.wait_for_selector("h6.mb-0", timeout=25000)
+            except Exception:
+                # Dejamos un pequeño margen por si el sitio termina de pintar tarde.
+                page.wait_for_timeout(3000)
+
             html = page.content()
-            soup = BeautifulSoup(html, 'html.parser')
+            print(f"📄 TusNumerosRD HTML: {len(html)} bytes")
+
+            if len(html) < 1000:
+                raise RuntimeError(
+                    f"HTML demasiado pequeño en tusnumerosrd.com: {len(html)} bytes"
+                )
+
+            soup = BeautifulSoup(html, "html.parser")
             filas = soup.select("tr")
-            for fila in filas:
+            print(f"📊 TusNumerosRD: {len(filas)} filas encontradas")
+
+            errores = 0
+
+            for indice, fila in enumerate(filas):
                 try:
-                    nombre_tag = fila.select_one("h6.mb-0")
+                    # Nombre: selector original + fallback simple.
+                    nombre_tag = fila.select_one("h6.mb-0") or fila.select_one("h6")
                     if not nombre_tag:
                         continue
-                    nombre = nombre_tag.get_text(strip=True)
+
+                    nombre = nombre_tag.get_text(" ", strip=True)
+                    if not nombre:
+                        continue
+
+                    # Logo: conserva src original y soporta lazy-loading.
                     img_tag = fila.select_one("img")
-                    img_url = img_tag["src"] if img_tag and "src" in img_tag.attrs else ""
-                    if img_url and img_url.startswith('/'):
+                    img_url = ""
+                    if img_tag:
+                        img_url = img_tag.get("src", "") or img_tag.get("data-src", "")
+
+                    if img_url.startswith("/"):
                         img_url = "https://www.tusnumerosrd.com" + img_url
                     img_url = sanitizar_logo(img_url)
-                    numeros = [n.get_text(strip=True) for n in fila.select("div.badge.badge-primary.badge-dot")]
-                    fecha_tag = fila.select_one("span.table-inner-text")
-                    fecha = fecha_tag.get_text(strip=True) if fecha_tag else ""
-                    fecha_normalizada = normaliza_fecha(fecha)
-                    celdas = fila.find_all("td", class_="text-center")
-                    hora = celdas[-1].get_text(strip=True) if celdas else None  # ej. 8:55PM
 
-                    if nombre and numeros:
-                        resultados.append({
-                            'fuente': 'tusnumerosrd.com',
-                            'loteria': nombre,
-                            'img': img_url,
-                            'numeros': numeros,
-                            'fecha_original': fecha,
-                            'fecha': fecha_normalizada,
-                            'hora': hora,
-                            'hora_scrapeo': datetime.now(TZ_RD).strftime('%Y-%m-%d %H:%M:%S')
-                        })
-                except Exception:
-                    continue
+                    # Números: selector original exacto.
+                    numeros = [
+                        n.get_text(strip=True)
+                        for n in fila.select("div.badge.badge-primary.badge-dot")
+                        if n.get_text(strip=True)
+                    ]
+
+                    # Fallback si la web cambia clases pero conserva .badge.
+                    if not numeros:
+                        candidatos = []
+                        for badge in fila.select(".badge"):
+                            valor = badge.get_text(" ", strip=True)
+                            if re.fullmatch(r"\d{1,3}", valor):
+                                candidatos.append(valor)
+                        numeros = candidatos
+
+                    # Fecha:
+                    # El HTML actual tiene span.table-inner-text anidado.
+                    # Tomamos el último candidato válido para evitar depender
+                    # del span exterior.
+                    fecha = ""
+                    fecha_tags = fila.select("span.table-inner-text")
+                    for tag in reversed(fecha_tags):
+                        candidato = re.sub(
+                            r"\s+",
+                            " ",
+                            tag.get_text(" ", strip=True).replace("\xa0", " ")
+                        ).strip()
+                        if re.search(
+                            r"\b\d{1,2}\s+"
+                            r"(?:enero|febrero|marzo|abril|mayo|junio|julio|"
+                            r"agosto|septiembre|setiembre|octubre|noviembre|diciembre)\b",
+                            candidato,
+                            re.IGNORECASE
+                        ):
+                            fecha = candidato
+                            break
+
+                    # Fallback: buscar la fecha en el texto de las celdas.
+                    todas_celdas = fila.find_all("td")
+                    textos_celdas = [
+                        re.sub(
+                            r"\s+",
+                            " ",
+                            td.get_text(" ", strip=True).replace("\xa0", " ")
+                        ).strip()
+                        for td in todas_celdas
+                    ]
+
+                    if not fecha:
+                        for texto in textos_celdas:
+                            m_fecha = re.search(
+                                r"\b\d{1,2}\s+"
+                                r"(?:enero|febrero|marzo|abril|mayo|junio|julio|"
+                                r"agosto|septiembre|setiembre|octubre|noviembre|diciembre)"
+                                r"(?:\s+\d{4})?\b",
+                                texto,
+                                re.IGNORECASE
+                            )
+                            if m_fecha:
+                                fecha = m_fecha.group(0)
+                                break
+
+                    fecha_normalizada = normaliza_fecha(fecha)
+
+                    # Hora:
+                    # En el HTML actual es la última celda: <td>7:25PM</td>.
+                    # Se busca por patrón para que siga funcionando aunque
+                    # cambien las clases CSS.
+                    hora = None
+                    for texto in reversed(textos_celdas):
+                        m_hora = re.search(
+                            r"\b(\d{1,2}):(\d{2})\s*([AaPp][Mm])\b",
+                            texto
+                        )
+                        if m_hora:
+                            hora = (
+                                f"{int(m_hora.group(1))}:"
+                                f"{m_hora.group(2)}"
+                                f"{m_hora.group(3).upper()}"
+                            )
+                            break
+
+                    # Solo publicar filas realmente utilizables.
+                    if not numeros:
+                        print(f"⚠️ {nombre}: sin números; fila ignorada")
+                        continue
+
+                    if not fecha_normalizada:
+                        print(f"⚠️ {nombre}: sin fecha válida; fila ignorada")
+                        continue
+
+                    resultados.append({
+                        "fuente": "tusnumerosrd.com",
+                        "loteria": nombre,
+                        "img": img_url,
+                        "numeros": numeros,
+                        "fecha_original": fecha,
+                        "fecha": fecha_normalizada,
+                        "hora": hora,
+                        "hora_scrapeo": datetime.now(TZ_RD).strftime("%Y-%m-%d %H:%M:%S")
+                    })
+
+                except Exception as e:
+                    errores += 1
+                    print(
+                        f"⚠️ Error procesando fila TusNumerosRD "
+                        f"#{indice}: {repr(e)}"
+                    )
+
             browser.close()
+
+            print(
+                f"✅ TusNumerosRD: {len(resultados)} resultados válidos"
+                + (f" | {errores} errores de fila" if errores else "")
+            )
+
+            # Diagnóstico útil sin alterar el JSON público.
+            for r in resultados[:5]:
+                print(
+                    "   ↳ "
+                    f"{r.get('loteria')} | "
+                    f"{r.get('numeros')} | "
+                    f"{r.get('fecha_original')} -> {r.get('fecha')} | "
+                    f"{r.get('hora')}"
+                )
+
     except Exception as e:
-        print(f"❌ Error tusnumerosrd.com: {e}")
+        print(f"❌ Error tusnumerosrd.com: {repr(e)}")
+
     return resultados
 
 # ---------- Persistencia ----------
@@ -415,20 +650,73 @@ def main():
     resultados_tn = scrapear_tusnumerosrd()
     print(f"✅ {len(resultados_tn)} resultados en tusnumerosrd.com")
 
+    print("")
+    print("=====================================")
+    print("📊 RESUMEN DE SCRAPING")
+    print("=====================================")
+    print(f"LoteriasDominicanas : {len(resultados_ld)}")
+    print(f"TusNumerosRD        : {len(resultados_tn)}")
+    print("=====================================")
+
+    # Blindaje: si las DOS fuentes devuelven cero, el proceso debe fallar.
+    # Así GitHub Actions no puede quedar verde ocultando una caída total.
+    if not resultados_ld and not resultados_tn:
+        raise RuntimeError(
+            "CRITICAL: Ninguna fuente devolvió resultados. "
+            "Se aborta para no sobrescribir la API con datos inválidos."
+        )
+
+    if not resultados_ld:
+        print("⚠️ LoteriasDominicanas no devolvió resultados; se continúa con TusNumerosRD.")
+
+    if not resultados_tn:
+        print("⚠️ TusNumerosRD no devolvió resultados; se continúa con LoteriasDominicanas.")
+
     nuevos = resultados_ld + resultados_tn
 
     # 1) SOLO HOY (RD)
     solo_hoy = []
+    descartados_fecha = 0
+
     for r in nuevos:
         dt = parse_dt(r)
-        if dt and is_today(dt):
-            r['_dt'] = dt
-            solo_hoy.append(r)
 
+        if dt and is_today(dt):
+            r["_dt"] = dt
+            solo_hoy.append(r)
+        else:
+            descartados_fecha += 1
+
+    print(
+        f"📅 Resultados de HOY (RD): {len(solo_hoy)} | "
+        f"fuera de hoy/no parseables: {descartados_fecha}"
+    )
+
+    # Blindaje crítico:
+    # si las fuentes trajeron contenido pero nada puede reconocerse como "hoy",
+    # NO se reescribe el archivo ni se da una falsa ejecución correcta.
     if not solo_hoy:
-        print("⚠️ No hay resultados de HOY para enviar.")
+        muestra_fechas = [
+            {
+                "loteria": r.get("loteria"),
+                "fecha_original": r.get("fecha_original"),
+                "fecha": r.get("fecha"),
+                "hora": r.get("hora")
+            }
+            for r in nuevos[:10]
+        ]
+        print("🔎 Muestra de fechas recibidas:")
+        for item in muestra_fechas:
+            print(f"   {item}")
+
+        raise RuntimeError(
+            "CRITICAL: Se obtuvieron resultados de las fuentes, "
+            "pero ninguno corresponde a HOY en República Dominicana. "
+            "Se aborta para proteger el último JSON válido."
+        )
 
     # 2) Persistencia del archivo público (guardamos lo de hoy sobre histórico)
+    # Se conserva exactamente el comportamiento histórico original.
     historico = cargar_historico()
     delta = delta_nuevos(historico, solo_hoy)
     delta = compactar_delta(delta)
@@ -436,15 +724,53 @@ def main():
     resultados_actualizados = evitar_duplicados(historico, solo_hoy)
     resultados_a_grabar = _clean_for_json(resultados_actualizados)
 
-    with open("resultados_combinados.json", "w", encoding="utf-8") as f:
-        json.dump({
-            "generado": datetime.now(TZ_RD).isoformat(),
-            "resultados": resultados_a_grabar
-        }, f, indent=2, ensure_ascii=False)
+    # Validación antes de tocar el archivo público.
+    if not isinstance(resultados_a_grabar, list) or not resultados_a_grabar:
+        raise RuntimeError(
+            "CRITICAL: El resultado final que se iba a guardar está vacío o es inválido."
+        )
+
+    payload_publico = {
+        "generado": datetime.now(TZ_RD).isoformat(),
+        "resultados": resultados_a_grabar
+    }
+
+    # Escritura atómica: primero temporal, luego reemplazo.
+    # Evita dejar un JSON cortado/corrupto si el proceso se interrumpe.
+    tmp_path = "resultados_combinados.json.tmp"
+    final_path = "resultados_combinados.json"
+
+    with open(tmp_path, "w", encoding="utf-8") as f:
+        json.dump(payload_publico, f, indent=2, ensure_ascii=False)
+        f.flush()
+        os.fsync(f.fileno())
+
+    # Verifica que el archivo temporal sea JSON válido antes de publicarlo.
+    with open(tmp_path, "r", encoding="utf-8") as f:
+        verificacion = json.load(f)
+
+    if (
+        not isinstance(verificacion, dict)
+        or not isinstance(verificacion.get("resultados"), list)
+        or len(verificacion["resultados"]) == 0
+    ):
+        try:
+            os.remove(tmp_path)
+        except OSError:
+            pass
+        raise RuntimeError(
+            "CRITICAL: La validación del JSON temporal falló. "
+            "No se reemplazó el archivo público."
+        )
+
+    os.replace(tmp_path, final_path)
+
     print(f"📦 Guardados {len(resultados_a_grabar)} en resultados_combinados.json")
     print(f"➕ Nuevos HOY a enviar: {len(delta)}")
 
+    # Si no hay delta, el JSON se mantiene actualizado pero no se repiten notificaciones.
     if not delta:
+        print("↩️ No hay resultados nuevos para notificar.")
         return
 
     # 3) Idempotencia entre corridas
@@ -453,16 +779,16 @@ def main():
     # 4) Envío por lotería canónica (toma el más reciente por _dt)
     por_loteria = {}
     for r in delta:
-        lot_can = canonicaliza_loteria(r['loteria'])
+        lot_can = canonicaliza_loteria(r["loteria"])
         por_loteria.setdefault(lot_can, []).append(r)
 
     for lot, items in por_loteria.items():
-        items.sort(key=lambda x: x.get('_dt') or datetime.min.replace(tzinfo=TZ_RD))
+        items.sort(key=lambda x: x.get("_dt") or datetime.min.replace(tzinfo=TZ_RD))
         last = items[-1]
-        fecha_txt = last.get('fecha') or ""
-        hora_txt  = last.get('hora') or ""
-        numeros   = last.get('numeros') or []
-        nums_txt  = " ".join([str(x).zfill(2) for x in numeros])  # preserva ceros
+        fecha_txt = last.get("fecha") or ""
+        hora_txt = last.get("hora") or ""
+        numeros = last.get("numeros") or []
+        nums_txt = " ".join([str(x).zfill(2) for x in numeros])  # preserva ceros
 
         dedupe_id = f"{topic_seguro(lot)}|{nums_key(numeros)}|{fecha_txt}"
         if dedupe_id in sent_cache:
@@ -475,29 +801,35 @@ def main():
             "fecha": fecha_txt,
             "hora": hora_txt,
             "numeros": nums_txt,
-            "fuente": last.get('fuente', ''),
+            "fuente": last.get("fuente", ""),
         }
 
         title = f"Resultados de {lot}"
-        body  = f"{nums_txt} • {fecha_txt}" + (f" · {hora_txt}" if hora_txt else "")
+        body = f"{nums_txt} • {fecha_txt}" + (f" · {hora_txt}" if hora_txt else "")
 
-        topic_especifico = topic_seguro(lot)                   # canónico
-        topic_alias = topic_seguro(last.get('loteria') or lot) # alias crudo tal como viene
+        topic_especifico = topic_seguro(lot)                    # canónico
+        topic_alias = topic_seguro(last.get("loteria") or lot)  # alias crudo tal como viene
         collapse = f"{topic_especifico}_{fecha_txt}"
         tag = dedupe_id  # estable por lotería+fecha+números
 
         # a) tópico específico (canónico)
-        enviar_fcm_v1(title, body, topic_especifico, payload,
-                      collapse_key=collapse, tag=tag, ttl_seconds=900)
+        enviar_fcm_v1(
+            title, body, topic_especifico, payload,
+            collapse_key=collapse, tag=tag, ttl_seconds=900
+        )
 
         # b) alias “raw” por compatibilidad con suscripciones antiguas
         if topic_alias != topic_especifico:
-            enviar_fcm_v1(title, body, topic_alias, payload,
-                          collapse_key=collapse, tag=tag, ttl_seconds=900)
+            enviar_fcm_v1(
+                title, body, topic_alias, payload,
+                collapse_key=collapse, tag=tag, ttl_seconds=900
+            )
 
         # c) tópico global
-        enviar_fcm_v1(title, body, TOPIC_GLOBAL, payload,
-                      collapse_key=collapse, tag=tag, ttl_seconds=900)
+        enviar_fcm_v1(
+            title, body, TOPIC_GLOBAL, payload,
+            collapse_key=collapse, tag=tag, ttl_seconds=900
+        )
 
         sent_cache[dedupe_id] = datetime.now(TZ_RD).timestamp()
 
