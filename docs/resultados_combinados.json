@@ -1,5 +1,5 @@
 {
-  "generado": "2026-08-13T17:08:21.081992-04:00",
+  "generado": "2026-08-13T17:17:57.231304-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -262515,6 +262515,20 @@
       "fecha": "2026-08-13",
       "hora": "3:55PM",
       "hora_scrapeo": "2026-08-13 16:07:31"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Tarde 5PM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "12",
+        "86",
+        "11"
+      ],
+      "fecha_original": "13 agosto",
+      "fecha": "2026-08-13",
+      "hora": "4:55PM",
+      "hora_scrapeo": "2026-08-13 17:17:57"
     }
   ]
 }
