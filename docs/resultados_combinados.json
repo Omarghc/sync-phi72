@@ -1,5 +1,5 @@
 {
-  "generado": "2026-08-13T14:38:17.285805-04:00",
+  "generado": "2026-08-13T14:48:13.353081-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -262459,6 +262459,34 @@
       "fecha": "2026-08-13",
       "hora": "1:55PM",
       "hora_scrapeo": "2026-08-13 14:07:23"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Nacional Tarde (gana mas)",
+      "img": "https://www.tusnumerosrd.com/images/loterias/nacional.svg",
+      "numeros": [
+        "03",
+        "89",
+        "17"
+      ],
+      "fecha_original": "13 agosto",
+      "fecha": "2026-08-13",
+      "hora": "2:25PM",
+      "hora_scrapeo": "2026-08-13 14:48:13"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "New York Tarde",
+      "img": "https://www.tusnumerosrd.com/images/loterias/new_york.svg",
+      "numeros": [
+        "28",
+        "34",
+        "66"
+      ],
+      "fecha_original": "13 agosto",
+      "fecha": "2026-08-13",
+      "hora": "2:25PM",
+      "hora_scrapeo": "2026-08-13 14:48:13"
     }
   ]
 }
