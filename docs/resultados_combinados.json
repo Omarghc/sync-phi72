@@ -1,5 +1,5 @@
 {
-  "generado": "2026-08-17T19:14:40.428816-04:00",
+  "generado": "2026-08-17T19:19:21.252938-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -264279,6 +264279,34 @@
       "fecha": "2026-08-17",
       "hora": "6:55PM",
       "hora_scrapeo": "2026-08-17 19:14:40"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Georgia Tarde 7pm",
+      "img": "https://www.tusnumerosrd.com/images/loterias/georgia.svg",
+      "numeros": [
+        "19",
+        "40",
+        "61"
+      ],
+      "fecha_original": "17 agosto",
+      "fecha": "2026-08-17",
+      "hora": "6:30PM",
+      "hora_scrapeo": "2026-08-17 19:19:21"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "La Primera Noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/primera.svg",
+      "numeros": [
+        "60",
+        "74",
+        "65"
+      ],
+      "fecha_original": "17 agosto",
+      "fecha": "2026-08-17",
+      "hora": "6:55PM",
+      "hora_scrapeo": "2026-08-17 19:19:21"
     }
   ]
 }
