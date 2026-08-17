@@ -1,5 +1,5 @@
 {
-  "generado": "2026-08-17T14:36:31.780880-04:00",
+  "generado": "2026-08-17T14:40:54.433715-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -264167,6 +264167,20 @@
       "fecha": "2026-08-17",
       "hora": "1:55PM",
       "hora_scrapeo": "2026-08-17 14:17:39"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "New York Tarde",
+      "img": "https://www.tusnumerosrd.com/images/loterias/new_york.svg",
+      "numeros": [
+        "03",
+        "83",
+        "70"
+      ],
+      "fecha_original": "17 agosto",
+      "fecha": "2026-08-17",
+      "hora": "2:25PM",
+      "hora_scrapeo": "2026-08-17 14:40:54"
     }
   ]
 }
