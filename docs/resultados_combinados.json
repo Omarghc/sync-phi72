@@ -1,5 +1,5 @@
 {
-  "generado": "2026-08-21T12:37:00.970798-04:00",
+  "generado": "2026-08-21T12:47:18.272492-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -265832,6 +265832,20 @@
       "fecha": "2026-08-21",
       "hora": "12:25PM",
       "hora_scrapeo": "2026-08-21 12:37:00"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "La Suerte Medio Dia",
+      "img": "https://www.tusnumerosrd.com/images/loterias/lasuerte.svg",
+      "numeros": [
+        "54",
+        "46",
+        "25"
+      ],
+      "fecha_original": "21 agosto",
+      "fecha": "2026-08-21",
+      "hora": "12:25PM",
+      "hora_scrapeo": "2026-08-21 12:47:18"
     }
   ]
 }
