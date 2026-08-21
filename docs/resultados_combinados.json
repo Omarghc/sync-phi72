@@ -1,5 +1,5 @@
 {
-  "generado": "2026-08-21T12:27:45.213351-04:00",
+  "generado": "2026-08-21T12:37:00.970798-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -265818,6 +265818,20 @@
       "fecha": "2026-08-21",
       "hora": "11:55AM",
       "hora_scrapeo": "2026-08-21 12:17:21"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "King lottery Medio Dia",
+      "img": "https://www.tusnumerosrd.com/images/loterias/king.svg",
+      "numeros": [
+        "03",
+        "93",
+        "22"
+      ],
+      "fecha_original": "21 agosto",
+      "fecha": "2026-08-21",
+      "hora": "12:25PM",
+      "hora_scrapeo": "2026-08-21 12:37:00"
     }
   ]
 }
