@@ -1,5 +1,5 @@
 {
-  "generado": "2026-08-21T12:07:19.935670-04:00",
+  "generado": "2026-08-21T12:17:22.088231-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -265790,6 +265790,34 @@
       "fecha": "2026-08-21",
       "hora": "11:55AM",
       "hora_scrapeo": "2026-08-21 12:07:19"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "La Primera Tarde",
+      "img": "https://www.tusnumerosrd.com/images/loterias/primera.svg",
+      "numeros": [
+        "74",
+        "96",
+        "12"
+      ],
+      "fecha_original": "21 agosto",
+      "fecha": "2026-08-21",
+      "hora": "11:55AM",
+      "hora_scrapeo": "2026-08-21 12:17:21"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Lotedom",
+      "img": "https://www.tusnumerosrd.com/images/loterias/lotedom.svg",
+      "numeros": [
+        "81",
+        "18",
+        "05"
+      ],
+      "fecha_original": "21 agosto",
+      "fecha": "2026-08-21",
+      "hora": "11:55AM",
+      "hora_scrapeo": "2026-08-21 12:17:21"
     }
   ]
 }
