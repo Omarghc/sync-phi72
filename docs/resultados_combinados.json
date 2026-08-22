@@ -1,5 +1,5 @@
 {
-  "generado": "2026-08-22T12:10:59.510298-04:00",
+  "generado": "2026-08-22T12:17:11.159911-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -266238,6 +266238,20 @@
       "fecha": "2026-08-22",
       "hora": "11:55AM",
       "hora_scrapeo": "2026-08-22 12:10:59"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "La Primera Tarde",
+      "img": "https://www.tusnumerosrd.com/images/loterias/primera.svg",
+      "numeros": [
+        "32",
+        "45",
+        "11"
+      ],
+      "fecha_original": "22 agosto",
+      "fecha": "2026-08-22",
+      "hora": "11:55AM",
+      "hora_scrapeo": "2026-08-22 12:17:10"
     }
   ]
 }
