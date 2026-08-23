@@ -1,5 +1,5 @@
 {
-  "generado": "2026-08-23T18:17:19.412462-04:00",
+  "generado": "2026-08-23T18:26:22.031294-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -266882,6 +266882,20 @@
       "fecha": "2026-08-23",
       "hora": "5:55PM",
       "hora_scrapeo": "2026-08-23 18:07:08"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Nacional Noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/nacional.svg",
+      "numeros": [
+        "18",
+        "86",
+        "74"
+      ],
+      "fecha_original": "23 agosto",
+      "fecha": "2026-08-23",
+      "hora": "5:50PM",
+      "hora_scrapeo": "2026-08-23 18:26:21"
     }
   ]
 }
