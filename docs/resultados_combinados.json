@@ -1,5 +1,5 @@
 {
-  "generado": "2026-08-24T19:08:01.180362-04:00",
+  "generado": "2026-08-24T19:17:36.819854-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -267330,6 +267330,20 @@
       "fecha": "2026-08-24",
       "hora": "6:55PM",
       "hora_scrapeo": "2026-08-24 19:08:01"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Georgia Tarde 7pm",
+      "img": "https://www.tusnumerosrd.com/images/loterias/georgia.svg",
+      "numeros": [
+        "98",
+        "63",
+        "04"
+      ],
+      "fecha_original": "24 agosto",
+      "fecha": "2026-08-24",
+      "hora": "6:30PM",
+      "hora_scrapeo": "2026-08-24 19:17:36"
     }
   ]
 }
