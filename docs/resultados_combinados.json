@@ -1,5 +1,5 @@
 {
-  "generado": "2026-08-24T12:26:47.932610-04:00",
+  "generado": "2026-08-24T12:37:37.204730-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -267120,6 +267120,20 @@
       "fecha": "2026-08-24",
       "hora": "11:55AM",
       "hora_scrapeo": "2026-08-24 12:17:41"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "King lottery Medio Dia",
+      "img": "https://www.tusnumerosrd.com/images/loterias/king.svg",
+      "numeros": [
+        "04",
+        "90",
+        "34"
+      ],
+      "fecha_original": "24 agosto",
+      "fecha": "2026-08-24",
+      "hora": "12:25PM",
+      "hora_scrapeo": "2026-08-24 12:37:37"
     }
   ]
 }
