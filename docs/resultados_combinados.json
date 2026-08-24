@@ -1,5 +1,5 @@
 {
-  "generado": "2026-08-24T12:07:42.545579-04:00",
+  "generado": "2026-08-24T12:17:41.594265-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -267078,6 +267078,48 @@
       "fecha": "2026-08-24",
       "hora": "10:55AM",
       "hora_scrapeo": "2026-08-24 11:07:36"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "La Primera Tarde",
+      "img": "https://www.tusnumerosrd.com/images/loterias/primera.svg",
+      "numeros": [
+        "20",
+        "74",
+        "35"
+      ],
+      "fecha_original": "24 agosto",
+      "fecha": "2026-08-24",
+      "hora": "11:55AM",
+      "hora_scrapeo": "2026-08-24 12:17:41"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Lotedom",
+      "img": "https://www.tusnumerosrd.com/images/loterias/lotedom.svg",
+      "numeros": [
+        "20",
+        "28",
+        "95"
+      ],
+      "fecha_original": "24 agosto",
+      "fecha": "2026-08-24",
+      "hora": "11:55AM",
+      "hora_scrapeo": "2026-08-24 12:17:41"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Medio Dia 12PM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "49",
+        "75",
+        "23"
+      ],
+      "fecha_original": "24 agosto",
+      "fecha": "2026-08-24",
+      "hora": "11:55AM",
+      "hora_scrapeo": "2026-08-24 12:17:41"
     }
   ]
 }
