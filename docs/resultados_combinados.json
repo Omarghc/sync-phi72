@@ -1,5 +1,5 @@
 {
-  "generado": "2026-08-25T12:57:47.502692-04:00",
+  "generado": "2026-08-25T13:07:47.795255-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -267582,6 +267582,34 @@
       "fecha": "2026-08-25",
       "hora": "12:25PM",
       "hora_scrapeo": "2026-08-25 12:47:42"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Real Tarde",
+      "img": "https://www.tusnumerosrd.com/images/loterias/real.svg",
+      "numeros": [
+        "25",
+        "86",
+        "43"
+      ],
+      "fecha_original": "25 agosto",
+      "fecha": "2026-08-25",
+      "hora": "12:55PM",
+      "hora_scrapeo": "2026-08-25 13:07:47"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Tarde 1:00PM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "43",
+        "50",
+        "81"
+      ],
+      "fecha_original": "25 agosto",
+      "fecha": "2026-08-25",
+      "hora": "12:55PM",
+      "hora_scrapeo": "2026-08-25 13:07:47"
     }
   ]
 }
