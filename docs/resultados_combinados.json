@@ -1,5 +1,5 @@
 {
-  "generado": "2026-08-25T21:07:34.257134-04:00",
+  "generado": "2026-08-25T21:17:36.484458-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -267820,6 +267820,48 @@
       "fecha": "2026-08-25",
       "hora": "7:55PM",
       "hora_scrapeo": "2026-08-25 20:18:03"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Nacional Noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/nacional.svg",
+      "numeros": [
+        "80",
+        "58",
+        "81"
+      ],
+      "fecha_original": "25 agosto",
+      "fecha": "2026-08-25",
+      "hora": "8:50PM",
+      "hora_scrapeo": "2026-08-25 21:17:36"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Leidsa Noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/leidsa.svg",
+      "numeros": [
+        "42",
+        "08",
+        "12"
+      ],
+      "fecha_original": "25 agosto",
+      "fecha": "2026-08-25",
+      "hora": "8:50PM",
+      "hora_scrapeo": "2026-08-25 21:17:36"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Noche 9:00PM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "22",
+        "76",
+        "93"
+      ],
+      "fecha_original": "25 agosto",
+      "fecha": "2026-08-25",
+      "hora": "8:55PM",
+      "hora_scrapeo": "2026-08-25 21:17:36"
     }
   ]
 }
