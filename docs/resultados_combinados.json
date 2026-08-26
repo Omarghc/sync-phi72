@@ -1,5 +1,5 @@
 {
-  "generado": "2026-08-25T22:07:38.961303-04:00",
+  "generado": "2026-08-25T22:17:29.205195-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -267876,6 +267876,20 @@
       "fecha": "2026-08-25",
       "hora": "9:35PM",
       "hora_scrapeo": "2026-08-25 21:57:39"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Noche 10PM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "63",
+        "91",
+        "45"
+      ],
+      "fecha_original": "25 agosto",
+      "fecha": "2026-08-25",
+      "hora": "9:55PM",
+      "hora_scrapeo": "2026-08-25 22:17:29"
     }
   ]
 }
