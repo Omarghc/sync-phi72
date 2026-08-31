@@ -1,5 +1,5 @@
 {
-  "generado": "2026-08-31T14:56:52.570497-04:00",
+  "generado": "2026-08-31T15:06:13.460436-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -270269,6 +270269,20 @@
       "fecha": "2026-08-31",
       "hora": "2:25PM",
       "hora_scrapeo": "2026-08-31 14:56:52"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Tarde 3PM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "98",
+        "48",
+        "26"
+      ],
+      "fecha_original": "31 agosto",
+      "fecha": "2026-08-31",
+      "hora": "2:55PM",
+      "hora_scrapeo": "2026-08-31 15:06:13"
     }
   ]
 }
