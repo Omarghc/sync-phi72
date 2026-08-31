@@ -1,5 +1,5 @@
 {
-  "generado": "2026-08-31T13:37:45.478764-04:00",
+  "generado": "2026-08-31T13:47:24.951121-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -270213,6 +270213,20 @@
       "fecha": "2026-08-31",
       "hora": "12:55PM",
       "hora_scrapeo": "2026-08-31 13:17:31"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Florida Tarde",
+      "img": "https://www.tusnumerosrd.com/images/loterias/florida.svg",
+      "numeros": [
+        "03",
+        "36",
+        "89"
+      ],
+      "fecha_original": "31 agosto",
+      "fecha": "2026-08-31",
+      "hora": "1:25PM",
+      "hora_scrapeo": "2026-08-31 13:47:24"
     }
   ]
 }
