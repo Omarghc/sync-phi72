@@ -1,5 +1,5 @@
 {
-  "generado": "2026-08-31T20:07:34.802854-04:00",
+  "generado": "2026-08-31T20:17:32.047390-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -270409,6 +270409,20 @@
       "fecha": "2026-08-31",
       "hora": "7:55PM",
       "hora_scrapeo": "2026-08-31 20:07:34"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteka Noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/loteka.svg",
+      "numeros": [
+        "60",
+        "43",
+        "21"
+      ],
+      "fecha_original": "31 agosto",
+      "fecha": "2026-08-31",
+      "hora": "7:55PM",
+      "hora_scrapeo": "2026-08-31 20:17:31"
     }
   ]
 }
