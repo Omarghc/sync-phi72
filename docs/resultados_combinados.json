@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-01T11:07:49.676820-04:00",
+  "generado": "2026-09-01T11:17:29.110439-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -270535,6 +270535,20 @@
       "fecha": "2026-09-01",
       "hora": "9:55AM",
       "hora_scrapeo": "2026-09-01 10:16:44"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Mañana 11AM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "51",
+        "63",
+        "04"
+      ],
+      "fecha_original": "01 septiembre",
+      "fecha": "2026-09-01",
+      "hora": "10:55AM",
+      "hora_scrapeo": "2026-09-01 11:17:28"
     }
   ]
 }
