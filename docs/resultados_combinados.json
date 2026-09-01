@@ -1,5 +1,5 @@
 {
-  "generado": "2026-08-31T20:56:46.629441-04:00",
+  "generado": "2026-08-31T21:07:37.877159-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -270423,6 +270423,34 @@
       "fecha": "2026-08-31",
       "hora": "7:55PM",
       "hora_scrapeo": "2026-08-31 20:17:31"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Leidsa Noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/leidsa.svg",
+      "numeros": [
+        "39",
+        "73",
+        "60"
+      ],
+      "fecha_original": "31 agosto",
+      "fecha": "2026-08-31",
+      "hora": "8:50PM",
+      "hora_scrapeo": "2026-08-31 21:07:37"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Noche 9:00PM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "72",
+        "96",
+        "55"
+      ],
+      "fecha_original": "31 agosto",
+      "fecha": "2026-08-31",
+      "hora": "8:55PM",
+      "hora_scrapeo": "2026-08-31 21:07:37"
     }
   ]
 }
