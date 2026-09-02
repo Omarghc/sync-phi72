@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-01T21:07:32.360803-04:00",
+  "generado": "2026-09-01T21:14:30.423107-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -270883,6 +270883,20 @@
       "fecha": "2026-09-01",
       "hora": "8:50PM",
       "hora_scrapeo": "2026-09-01 21:07:32"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Nacional Noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/nacional.svg",
+      "numeros": [
+        "05",
+        "26",
+        "37"
+      ],
+      "fecha_original": "01 septiembre",
+      "fecha": "2026-09-01",
+      "hora": "8:50PM",
+      "hora_scrapeo": "2026-09-01 21:14:30"
     }
   ]
 }
