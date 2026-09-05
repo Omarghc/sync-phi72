@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-05T19:28:14.063685-04:00",
+  "generado": "2026-09-05T19:37:21.470239-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -272559,6 +272559,20 @@
       "fecha": "2026-09-05",
       "hora": "6:55PM",
       "hora_scrapeo": "2026-09-05 19:18:09"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "King lottery Noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/king.svg",
+      "numeros": [
+        "79",
+        "40",
+        "29"
+      ],
+      "fecha_original": "05 septiembre",
+      "fecha": "2026-09-05",
+      "hora": "7:25PM",
+      "hora_scrapeo": "2026-09-05 19:37:21"
     }
   ]
 }
