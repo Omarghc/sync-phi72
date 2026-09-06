@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-06T19:02:32.255580-04:00",
+  "generado": "2026-09-06T19:08:06.627079-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -272978,6 +272978,20 @@
       "fecha": "2026-09-06",
       "hora": "5:50PM",
       "hora_scrapeo": "2026-09-06 18:18:10"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "La Primera Noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/primera.svg",
+      "numeros": [
+        "30",
+        "39",
+        "22"
+      ],
+      "fecha_original": "06 septiembre",
+      "fecha": "2026-09-06",
+      "hora": "6:55PM",
+      "hora_scrapeo": "2026-09-06 19:08:06"
     }
   ]
 }
