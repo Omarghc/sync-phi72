@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-05T20:03:36.902627-04:00",
+  "generado": "2026-09-05T20:08:41.547732-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -272573,6 +272573,34 @@
       "fecha": "2026-09-05",
       "hora": "7:25PM",
       "hora_scrapeo": "2026-09-05 19:37:21"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteka Noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/loteka.svg",
+      "numeros": [
+        "19",
+        "95",
+        "43"
+      ],
+      "fecha_original": "05 septiembre",
+      "fecha": "2026-09-05",
+      "hora": "7:55PM",
+      "hora_scrapeo": "2026-09-05 20:08:41"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Noche 8PM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "07",
+        "90",
+        "23"
+      ],
+      "fecha_original": "05 septiembre",
+      "fecha": "2026-09-05",
+      "hora": "7:55PM",
+      "hora_scrapeo": "2026-09-05 20:08:41"
     }
   ]
 }
