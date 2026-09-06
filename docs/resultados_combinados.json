@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-06T13:13:25.436867-04:00",
+  "generado": "2026-09-06T13:18:55.021461-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -272811,6 +272811,20 @@
       "fecha": "2026-09-06",
       "hora": "12:55PM",
       "hora_scrapeo": "2026-09-06 13:13:25"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Real Tarde",
+      "img": "https://www.tusnumerosrd.com/images/loterias/real.svg",
+      "numeros": [
+        "01",
+        "59",
+        "43"
+      ],
+      "fecha_original": "06 septiembre",
+      "fecha": "2026-09-06",
+      "hora": "12:55PM",
+      "hora_scrapeo": "2026-09-06 13:18:54"
     }
   ]
 }
