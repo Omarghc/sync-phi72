@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-06T18:08:09.617035-04:00",
+  "generado": "2026-09-06T18:18:10.291789-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -272964,6 +272964,20 @@
       "fecha": "2026-09-06",
       "hora": "5:55PM",
       "hora_scrapeo": "2026-09-06 18:08:09"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Nacional Noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/nacional.svg",
+      "numeros": [
+        "89",
+        "89",
+        "00"
+      ],
+      "fecha_original": "06 septiembre",
+      "fecha": "2026-09-06",
+      "hora": "5:50PM",
+      "hora_scrapeo": "2026-09-06 18:18:10"
     }
   ]
 }
