@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-07T14:37:48.697039-04:00",
+  "generado": "2026-09-07T14:47:55.884929-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -273286,6 +273286,19 @@
       "fecha": "2026-09-07",
       "hora": "1:55PM",
       "hora_scrapeo": "2026-09-07 14:08:03"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "New York Tarde",
+      "img": "https://www.tusnumerosrd.com/images/loterias/new_york.svg",
+      "numeros": [
+        "43",
+        "44"
+      ],
+      "fecha_original": "07 septiembre",
+      "fecha": "2026-09-07",
+      "hora": "2:25PM",
+      "hora_scrapeo": "2026-09-07 14:47:55"
     }
   ]
 }
