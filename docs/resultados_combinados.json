@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-09T18:04:01.386549-04:00",
+  "generado": "2026-09-09T18:09:01.429969-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -274236,6 +274236,20 @@
       "fecha": "2026-09-09",
       "hora": "5:55PM",
       "hora_scrapeo": "2026-09-09 18:04:01"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "La Suerte noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/lasuerte.svg",
+      "numeros": [
+        "68",
+        "82",
+        "83"
+      ],
+      "fecha_original": "09 septiembre",
+      "fecha": "2026-09-09",
+      "hora": "5:55PM",
+      "hora_scrapeo": "2026-09-09 18:09:01"
     }
   ]
 }
