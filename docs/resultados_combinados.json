@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-09T14:08:25.291171-04:00",
+  "generado": "2026-09-09T15:53:25.246496-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -274138,6 +274138,62 @@
       "fecha": "2026-09-09",
       "hora": "1:25PM",
       "hora_scrapeo": "2026-09-09 14:08:25"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Tarde 3PM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "66",
+        "07",
+        "59"
+      ],
+      "fecha_original": "09 septiembre",
+      "fecha": "2026-09-09",
+      "hora": "2:55PM",
+      "hora_scrapeo": "2026-09-09 15:53:25"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Nacional Tarde (gana mas)",
+      "img": "https://www.tusnumerosrd.com/images/loterias/nacional.svg",
+      "numeros": [
+        "31",
+        "60",
+        "99"
+      ],
+      "fecha_original": "09 septiembre",
+      "fecha": "2026-09-09",
+      "hora": "2:25PM",
+      "hora_scrapeo": "2026-09-09 15:53:25"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "New York Tarde",
+      "img": "https://www.tusnumerosrd.com/images/loterias/new_york.svg",
+      "numeros": [
+        "10",
+        "19",
+        "59"
+      ],
+      "fecha_original": "09 septiembre",
+      "fecha": "2026-09-09",
+      "hora": "2:25PM",
+      "hora_scrapeo": "2026-09-09 15:53:25"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Tarde 2PM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "95",
+        "99",
+        "12"
+      ],
+      "fecha_original": "09 septiembre",
+      "fecha": "2026-09-09",
+      "hora": "1:55PM",
+      "hora_scrapeo": "2026-09-09 15:53:25"
     }
   ]
 }
