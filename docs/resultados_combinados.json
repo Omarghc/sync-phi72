@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-10T21:07:41.810141-04:00",
+  "generado": "2026-09-10T21:17:56.741252-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -274796,6 +274796,20 @@
       "fecha": "2026-09-10",
       "hora": "8:50PM",
       "hora_scrapeo": "2026-09-10 21:07:41"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Leidsa Noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/leidsa.svg",
+      "numeros": [
+        "35",
+        "94",
+        "22"
+      ],
+      "fecha_original": "10 septiembre",
+      "fecha": "2026-09-10",
+      "hora": "8:50PM",
+      "hora_scrapeo": "2026-09-10 21:17:56"
     }
   ]
 }
