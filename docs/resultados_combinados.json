@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-11T12:08:22.428359-04:00",
+  "generado": "2026-09-11T12:17:29.884331-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -274922,6 +274922,20 @@
       "fecha": "2026-09-11",
       "hora": "11:55AM",
       "hora_scrapeo": "2026-09-11 12:08:22"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "La Primera Tarde",
+      "img": "https://www.tusnumerosrd.com/images/loterias/primera.svg",
+      "numeros": [
+        "79",
+        "99",
+        "00"
+      ],
+      "fecha_original": "11 septiembre",
+      "fecha": "2026-09-11",
+      "hora": "11:55AM",
+      "hora_scrapeo": "2026-09-11 12:17:29"
     }
   ]
 }
