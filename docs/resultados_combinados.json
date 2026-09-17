@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-17T18:58:16.064756-04:00",
+  "generado": "2026-09-17T19:07:31.909500-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -277719,6 +277719,48 @@
       "fecha": "2026-09-17",
       "hora": "5:55PM",
       "hora_scrapeo": "2026-09-17 18:08:27"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Georgia Tarde 7pm",
+      "img": "https://www.tusnumerosrd.com/images/loterias/georgia.svg",
+      "numeros": [
+        "10",
+        "28",
+        "24"
+      ],
+      "fecha_original": "17 septiembre",
+      "fecha": "2026-09-17",
+      "hora": "6:30PM",
+      "hora_scrapeo": "2026-09-17 19:07:31"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "La Primera Noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/primera.svg",
+      "numeros": [
+        "85",
+        "29",
+        "05"
+      ],
+      "fecha_original": "17 septiembre",
+      "fecha": "2026-09-17",
+      "hora": "6:55PM",
+      "hora_scrapeo": "2026-09-17 19:07:31"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Noche 7PM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "97",
+        "63",
+        "01"
+      ],
+      "fecha_original": "17 septiembre",
+      "fecha": "2026-09-17",
+      "hora": "6:55PM",
+      "hora_scrapeo": "2026-09-17 19:07:31"
     }
   ]
 }
