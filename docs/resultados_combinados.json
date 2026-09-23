@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-23T18:07:53.347399-04:00",
+  "generado": "2026-09-23T18:16:55.313222-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -280293,6 +280293,20 @@
       "fecha": "2026-09-23",
       "hora": "5:55PM",
       "hora_scrapeo": "2026-09-23 18:07:53"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "La Suerte noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/lasuerte.svg",
+      "numeros": [
+        "03",
+        "50",
+        "17"
+      ],
+      "fecha_original": "23 septiembre",
+      "fecha": "2026-09-23",
+      "hora": "5:55PM",
+      "hora_scrapeo": "2026-09-23 18:16:55"
     }
   ]
 }
