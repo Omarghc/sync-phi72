@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-24T12:38:51.714245-04:00",
+  "generado": "2026-09-24T12:47:41.496044-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -280559,6 +280559,34 @@
       "fecha": "2026-09-24",
       "hora": "11:55AM",
       "hora_scrapeo": "2026-09-24 12:18:00"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "La Suerte Medio Dia",
+      "img": "https://www.tusnumerosrd.com/images/loterias/lasuerte.svg",
+      "numeros": [
+        "41",
+        "46",
+        "02"
+      ],
+      "fecha_original": "24 septiembre",
+      "fecha": "2026-09-24",
+      "hora": "12:25PM",
+      "hora_scrapeo": "2026-09-24 12:47:41"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "King lottery Medio Dia",
+      "img": "https://www.tusnumerosrd.com/images/loterias/king.svg",
+      "numeros": [
+        "16",
+        "39",
+        "73"
+      ],
+      "fecha_original": "24 septiembre",
+      "fecha": "2026-09-24",
+      "hora": "12:25PM",
+      "hora_scrapeo": "2026-09-24 12:47:41"
     }
   ]
 }
