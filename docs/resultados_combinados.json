@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-25T12:08:11.666358-04:00",
+  "generado": "2026-09-25T12:17:57.005995-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -280937,6 +280937,34 @@
       "fecha": "2026-09-25",
       "hora": "11:55AM",
       "hora_scrapeo": "2026-09-25 12:08:11"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Medio Dia 12PM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "10",
+        "65",
+        "53"
+      ],
+      "fecha_original": "25 septiembre",
+      "fecha": "2026-09-25",
+      "hora": "11:55AM",
+      "hora_scrapeo": "2026-09-25 12:17:56"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Lotedom",
+      "img": "https://www.tusnumerosrd.com/images/loterias/lotedom.svg",
+      "numeros": [
+        "68",
+        "74",
+        "75"
+      ],
+      "fecha_original": "25 septiembre",
+      "fecha": "2026-09-25",
+      "hora": "11:55AM",
+      "hora_scrapeo": "2026-09-25 12:17:56"
     }
   ]
 }
