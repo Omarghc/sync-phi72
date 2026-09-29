@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-28T20:03:15.940845-04:00",
+  "generado": "2026-09-28T20:09:17.792333-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -282517,6 +282517,20 @@
       "fecha": "2026-09-28",
       "hora": "7:55PM",
       "hora_scrapeo": "2026-09-28 20:03:15"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteka Noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/loteka.svg",
+      "numeros": [
+        "83",
+        "33",
+        "64"
+      ],
+      "fecha_original": "28 septiembre",
+      "fecha": "2026-09-28",
+      "hora": "7:55PM",
+      "hora_scrapeo": "2026-09-28 20:09:17"
     }
   ]
 }
