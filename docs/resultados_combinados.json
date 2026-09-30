@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-29T21:47:29.544129-04:00",
+  "generado": "2026-09-29T21:55:47.969013-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -283007,6 +283007,20 @@
       "fecha": "2026-09-29",
       "hora": "8:50PM",
       "hora_scrapeo": "2026-09-29 21:17:31"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Florida Noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/florida.svg",
+      "numeros": [
+        "19",
+        "37",
+        "56"
+      ],
+      "fecha_original": "29 septiembre",
+      "fecha": "2026-09-29",
+      "hora": "9:35PM",
+      "hora_scrapeo": "2026-09-29 21:55:47"
     }
   ]
 }
