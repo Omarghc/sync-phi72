@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-30T21:59:23.877408-04:00",
+  "generado": "2026-09-30T22:09:13.488425-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -283455,6 +283455,20 @@
       "fecha": "2026-09-30",
       "hora": "9:35PM",
       "hora_scrapeo": "2026-09-30 21:59:23"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Noche 10PM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "39",
+        "47",
+        "26"
+      ],
+      "fecha_original": "30 septiembre",
+      "fecha": "2026-09-30",
+      "hora": "9:55PM",
+      "hora_scrapeo": "2026-09-30 22:09:13"
     }
   ]
 }
