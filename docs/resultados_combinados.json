@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-02T17:58:18.775592-04:00",
+  "generado": "2026-10-02T18:08:18.863481-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -284155,6 +284155,34 @@
       "fecha": "2026-10-02",
       "hora": "4:55PM",
       "hora_scrapeo": "2026-10-02 17:06:57"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "La Suerte noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/lasuerte.svg",
+      "numeros": [
+        "07",
+        "05",
+        "38"
+      ],
+      "fecha_original": "02 octubre",
+      "fecha": "2026-10-02",
+      "hora": "5:55PM",
+      "hora_scrapeo": "2026-10-02 18:08:18"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Tarde 6:00PM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "07",
+        "43",
+        "32"
+      ],
+      "fecha_original": "02 octubre",
+      "fecha": "2026-10-02",
+      "hora": "5:55PM",
+      "hora_scrapeo": "2026-10-02 18:08:18"
     }
   ]
 }
