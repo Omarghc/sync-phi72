@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-01T21:54:27.347202-04:00",
+  "generado": "2026-10-01T21:59:13.764033-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -283875,6 +283875,20 @@
       "fecha": "2026-10-01",
       "hora": "8:50PM",
       "hora_scrapeo": "2026-10-01 21:18:18"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Florida Noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/florida.svg",
+      "numeros": [
+        "28",
+        "15",
+        "57"
+      ],
+      "fecha_original": "01 octubre",
+      "fecha": "2026-10-01",
+      "hora": "9:35PM",
+      "hora_scrapeo": "2026-10-01 21:59:13"
     }
   ]
 }
