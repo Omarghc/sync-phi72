@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-02T12:08:22.989787-04:00",
+  "generado": "2026-10-02T12:18:23.700679-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -283987,6 +283987,20 @@
       "fecha": "2026-10-02",
       "hora": "11:55AM",
       "hora_scrapeo": "2026-10-02 12:08:22"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "La Primera Tarde",
+      "img": "https://www.tusnumerosrd.com/images/loterias/primera.svg",
+      "numeros": [
+        "72",
+        "86",
+        "25"
+      ],
+      "fecha_original": "02 octubre",
+      "fecha": "2026-10-02",
+      "hora": "11:55AM",
+      "hora_scrapeo": "2026-10-02 12:18:23"
     }
   ]
 }
