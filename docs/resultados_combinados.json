@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-04T18:08:29.091508-04:00",
+  "generado": "2026-10-04T18:18:31.380482-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -285063,6 +285063,20 @@
       "fecha": "2026-10-04",
       "hora": "5:55PM",
       "hora_scrapeo": "2026-10-04 18:08:28"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Nacional Noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/nacional.svg",
+      "numeros": [
+        "69",
+        "05",
+        "45"
+      ],
+      "fecha_original": "04 octubre",
+      "fecha": "2026-10-04",
+      "hora": "5:50PM",
+      "hora_scrapeo": "2026-10-04 18:18:31"
     }
   ]
 }
