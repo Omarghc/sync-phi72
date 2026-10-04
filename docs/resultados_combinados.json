@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-03T20:06:20.885729-04:00",
+  "generado": "2026-10-03T20:17:32.828899-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -284685,6 +284685,20 @@
       "fecha": "2026-10-03",
       "hora": "7:55PM",
       "hora_scrapeo": "2026-10-03 20:06:20"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteka Noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/loteka.svg",
+      "numeros": [
+        "49",
+        "10",
+        "98"
+      ],
+      "fecha_original": "03 octubre",
+      "fecha": "2026-10-03",
+      "hora": "7:55PM",
+      "hora_scrapeo": "2026-10-03 20:17:32"
     }
   ]
 }
