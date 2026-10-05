@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-05T19:06:26.014457-04:00",
+  "generado": "2026-10-05T19:16:36.804497-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -285496,6 +285496,34 @@
       "fecha": "2026-10-05",
       "hora": "6:55PM",
       "hora_scrapeo": "2026-10-05 19:06:25"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Georgia Tarde 7pm",
+      "img": "https://www.tusnumerosrd.com/images/loterias/georgia.svg",
+      "numeros": [
+        "44",
+        "25",
+        "89"
+      ],
+      "fecha_original": "05 octubre",
+      "fecha": "2026-10-05",
+      "hora": "6:30PM",
+      "hora_scrapeo": "2026-10-05 19:16:36"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "La Primera Noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/primera.svg",
+      "numeros": [
+        "97",
+        "09",
+        "25"
+      ],
+      "fecha_original": "05 octubre",
+      "fecha": "2026-10-05",
+      "hora": "6:55PM",
+      "hora_scrapeo": "2026-10-05 19:16:36"
     }
   ]
 }
