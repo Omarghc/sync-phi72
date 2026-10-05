@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-05T12:47:33.830045-04:00",
+  "generado": "2026-10-05T12:58:40.607201-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -285315,6 +285315,20 @@
       "fecha": "2026-10-05",
       "hora": "12:25PM",
       "hora_scrapeo": "2026-10-05 12:47:33"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "La Suerte Medio Dia",
+      "img": "https://www.tusnumerosrd.com/images/loterias/lasuerte.svg",
+      "numeros": [
+        "09",
+        "33",
+        "65"
+      ],
+      "fecha_original": "05 octubre",
+      "fecha": "2026-10-05",
+      "hora": "12:25PM",
+      "hora_scrapeo": "2026-10-05 12:58:40"
     }
   ]
 }
