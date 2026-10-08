@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-08T12:13:16.623609-04:00",
+  "generado": "2026-10-08T12:18:57.018354-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -286560,6 +286560,48 @@
       "fecha": "2026-10-08",
       "hora": "10:55AM",
       "hora_scrapeo": "2026-10-08 11:28:28"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "La Primera Tarde",
+      "img": "",
+      "numeros": [
+        "31",
+        "61",
+        "60"
+      ],
+      "fecha_original": "08 octubre",
+      "fecha": "2026-10-08",
+      "hora": "11:55AM",
+      "hora_scrapeo": "2026-10-08 12:18:56"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Lotedom",
+      "img": "",
+      "numeros": [
+        "64",
+        "68",
+        "22"
+      ],
+      "fecha_original": "08 octubre",
+      "fecha": "2026-10-08",
+      "hora": "11:55AM",
+      "hora_scrapeo": "2026-10-08 12:18:56"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Medio Dia 12PM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "76",
+        "02",
+        "00"
+      ],
+      "fecha_original": "08 octubre",
+      "fecha": "2026-10-08",
+      "hora": "11:55AM",
+      "hora_scrapeo": "2026-10-08 12:18:56"
     }
   ]
 }
