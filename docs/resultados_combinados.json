@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-11T18:57:32.954028-04:00",
+  "generado": "2026-10-11T19:08:23.623897-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -288098,6 +288098,48 @@
       "fecha": "2026-10-11",
       "hora": "5:50PM",
       "hora_scrapeo": "2026-10-11 18:19:35"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Georgia Tarde 7pm",
+      "img": "",
+      "numeros": [
+        "47",
+        "82",
+        "46"
+      ],
+      "fecha_original": "11 octubre",
+      "fecha": "2026-10-11",
+      "hora": "6:30PM",
+      "hora_scrapeo": "2026-10-11 19:08:23"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "La Primera Noche",
+      "img": "",
+      "numeros": [
+        "59",
+        "76",
+        "97"
+      ],
+      "fecha_original": "11 octubre",
+      "fecha": "2026-10-11",
+      "hora": "6:55PM",
+      "hora_scrapeo": "2026-10-11 19:08:23"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Noche 7PM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "74",
+        "99",
+        "90"
+      ],
+      "fecha_original": "11 octubre",
+      "fecha": "2026-10-11",
+      "hora": "6:55PM",
+      "hora_scrapeo": "2026-10-11 19:08:23"
     }
   ]
 }
