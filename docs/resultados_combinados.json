@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-11T18:10:47.596705-04:00",
+  "generado": "2026-10-11T18:19:36.174563-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -288084,6 +288084,20 @@
       "fecha": "2026-10-11",
       "hora": "5:55PM",
       "hora_scrapeo": "2026-10-11 18:10:47"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Nacional Noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/nacional.svg",
+      "numeros": [
+        "78",
+        "72",
+        "43"
+      ],
+      "fecha_original": "11 octubre",
+      "fecha": "2026-10-11",
+      "hora": "5:50PM",
+      "hora_scrapeo": "2026-10-11 18:19:35"
     }
   ]
 }
