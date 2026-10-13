@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-13T19:08:41.667753-04:00",
+  "generado": "2026-10-13T19:18:50.112844-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -288980,6 +288980,20 @@
       "fecha": "2026-10-13",
       "hora": "6:55PM",
       "hora_scrapeo": "2026-10-13 19:08:41"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Georgia Tarde 7pm",
+      "img": "",
+      "numeros": [
+        "54",
+        "47",
+        "73"
+      ],
+      "fecha_original": "13 octubre",
+      "fecha": "2026-10-13",
+      "hora": "6:30PM",
+      "hora_scrapeo": "2026-10-13 19:18:49"
     }
   ]
 }
