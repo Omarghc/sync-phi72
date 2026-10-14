@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-14T13:28:36.564440-04:00",
+  "generado": "2026-10-14T13:39:54.535997-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -289260,6 +289260,20 @@
       "fecha": "2026-10-14",
       "hora": "12:55PM",
       "hora_scrapeo": "2026-10-14 13:18:44"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Florida Tarde",
+      "img": "https://www.tusnumerosrd.com/images/loterias/florida.svg",
+      "numeros": [
+        "00",
+        "96",
+        "74"
+      ],
+      "fecha_original": "14 octubre",
+      "fecha": "2026-10-14",
+      "hora": "1:25PM",
+      "hora_scrapeo": "2026-10-14 13:39:54"
     }
   ]
 }
