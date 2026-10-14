@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-14T14:36:30.245708-04:00",
+  "generado": "2026-10-14T14:49:49.420456-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -289288,6 +289288,20 @@
       "fecha": "2026-10-14",
       "hora": "1:55PM",
       "hora_scrapeo": "2026-10-14 14:07:53"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "New York Tarde",
+      "img": "https://www.tusnumerosrd.com/images/loterias/new_york.svg",
+      "numeros": [
+        "89",
+        "89",
+        "16"
+      ],
+      "fecha_original": "14 octubre",
+      "fecha": "2026-10-14",
+      "hora": "2:25PM",
+      "hora_scrapeo": "2026-10-14 14:49:49"
     }
   ]
 }
