@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-13T21:08:37.202395-04:00",
+  "generado": "2026-10-13T21:18:42.806023-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -289050,6 +289050,34 @@
       "fecha": "2026-10-13",
       "hora": "8:55PM",
       "hora_scrapeo": "2026-10-13 21:08:37"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Leidsa Noche",
+      "img": "",
+      "numeros": [
+        "69",
+        "80",
+        "74"
+      ],
+      "fecha_original": "13 octubre",
+      "fecha": "2026-10-13",
+      "hora": "8:50PM",
+      "hora_scrapeo": "2026-10-13 21:18:42"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Nacional Noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/nacional.svg",
+      "numeros": [
+        "77",
+        "83",
+        "39"
+      ],
+      "fecha_original": "13 octubre",
+      "fecha": "2026-10-13",
+      "hora": "8:50PM",
+      "hora_scrapeo": "2026-10-13 21:18:42"
     }
   ]
 }
