@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-19T12:37:49.596851-04:00",
+  "generado": "2026-10-19T12:47:55.065578-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -291401,6 +291401,20 @@
       "fecha": "2026-10-19",
       "hora": "12:25PM",
       "hora_scrapeo": "2026-10-19 12:37:49"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "La Suerte Medio Dia",
+      "img": "",
+      "numeros": [
+        "14",
+        "83",
+        "25"
+      ],
+      "fecha_original": "19 octubre",
+      "fecha": "2026-10-19",
+      "hora": "12:25PM",
+      "hora_scrapeo": "2026-10-19 12:47:54"
     }
   ]
 }
