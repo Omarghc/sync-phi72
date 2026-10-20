@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-20T10:06:05.958052-04:00",
+  "generado": "2026-10-20T10:17:44.009824-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -291751,6 +291751,20 @@
       "fecha": "2026-10-20",
       "hora": "8:55AM",
       "hora_scrapeo": "2026-10-20 09:07:55"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Mañana 10:00AM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "94",
+        "12",
+        "48"
+      ],
+      "fecha_original": "20 octubre",
+      "fecha": "2026-10-20",
+      "hora": "9:55AM",
+      "hora_scrapeo": "2026-10-20 10:17:43"
     }
   ]
 }
