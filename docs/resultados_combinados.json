@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-19T19:57:50.327142-04:00",
+  "generado": "2026-10-19T20:08:03.285486-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -291611,6 +291611,48 @@
       "fecha": "2026-10-19",
       "hora": "6:30PM",
       "hora_scrapeo": "2026-10-19 19:17:53"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteka Noche",
+      "img": "",
+      "numeros": [
+        "86",
+        "83",
+        "04"
+      ],
+      "fecha_original": "19 octubre",
+      "fecha": "2026-10-19",
+      "hora": "7:55PM",
+      "hora_scrapeo": "2026-10-19 20:08:03"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Noche 8PM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "49",
+        "08",
+        "76"
+      ],
+      "fecha_original": "19 octubre",
+      "fecha": "2026-10-19",
+      "hora": "7:55PM",
+      "hora_scrapeo": "2026-10-19 20:08:03"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "King lottery Noche",
+      "img": "",
+      "numeros": [
+        "80",
+        "32",
+        "66"
+      ],
+      "fecha_original": "19 octubre",
+      "fecha": "2026-10-19",
+      "hora": "7:25PM",
+      "hora_scrapeo": "2026-10-19 20:08:03"
     }
   ]
 }
