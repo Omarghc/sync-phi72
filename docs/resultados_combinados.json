@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-20T22:05:52.407318-04:00",
+  "generado": "2026-10-20T22:17:59.071301-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -292128,6 +292128,34 @@
       "fecha": "2026-10-20",
       "hora": "8:55PM",
       "hora_scrapeo": "2026-10-20 21:08:01"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Florida Noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/florida.svg",
+      "numeros": [
+        "56",
+        "18",
+        "17"
+      ],
+      "fecha_original": "20 octubre",
+      "fecha": "2026-10-20",
+      "hora": "9:35PM",
+      "hora_scrapeo": "2026-10-20 22:17:58"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Noche 10PM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "90",
+        "28",
+        "38"
+      ],
+      "fecha_original": "20 octubre",
+      "fecha": "2026-10-20",
+      "hora": "9:55PM",
+      "hora_scrapeo": "2026-10-20 22:17:58"
     }
   ]
 }
