@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-22T21:01:38.382138-04:00",
+  "generado": "2026-10-22T21:08:23.175291-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -292954,6 +292954,48 @@
       "fecha": "2026-10-22",
       "hora": "7:55PM",
       "hora_scrapeo": "2026-10-22 20:16:17"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Leidsa Noche",
+      "img": "",
+      "numeros": [
+        "66",
+        "61",
+        "23"
+      ],
+      "fecha_original": "22 octubre",
+      "fecha": "2026-10-22",
+      "hora": "8:50PM",
+      "hora_scrapeo": "2026-10-22 21:08:22"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Noche 9:00PM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "81",
+        "95",
+        "56"
+      ],
+      "fecha_original": "22 octubre",
+      "fecha": "2026-10-22",
+      "hora": "8:55PM",
+      "hora_scrapeo": "2026-10-22 21:08:22"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Nacional Noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/nacional.svg",
+      "numeros": [
+        "59",
+        "09",
+        "96"
+      ],
+      "fecha_original": "22 octubre",
+      "fecha": "2026-10-22",
+      "hora": "8:50PM",
+      "hora_scrapeo": "2026-10-22 21:08:22"
     }
   ]
 }
