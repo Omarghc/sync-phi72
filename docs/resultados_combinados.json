@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-22T20:11:25.793600-04:00",
+  "generado": "2026-10-22T20:16:17.364238-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -292940,6 +292940,20 @@
       "fecha": "2026-10-22",
       "hora": "7:55PM",
       "hora_scrapeo": "2026-10-22 20:05:19"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteka Noche",
+      "img": "",
+      "numeros": [
+        "65",
+        "85",
+        "62"
+      ],
+      "fecha_original": "22 octubre",
+      "fecha": "2026-10-22",
+      "hora": "7:55PM",
+      "hora_scrapeo": "2026-10-22 20:16:17"
     }
   ]
 }
