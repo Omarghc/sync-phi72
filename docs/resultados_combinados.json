@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-23T13:06:52.547617-04:00",
+  "generado": "2026-10-23T13:12:50.099497-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -293150,6 +293150,20 @@
       "fecha": "2026-10-23",
       "hora": "12:25PM",
       "hora_scrapeo": "2026-10-23 12:44:52"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Real Tarde",
+      "img": "",
+      "numeros": [
+        "31",
+        "77",
+        "53"
+      ],
+      "fecha_original": "23 octubre",
+      "fecha": "2026-10-23",
+      "hora": "12:55PM",
+      "hora_scrapeo": "2026-10-23 13:12:49"
     }
   ]
 }
