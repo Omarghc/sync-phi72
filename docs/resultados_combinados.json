@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-24T12:58:01.772376-04:00",
+  "generado": "2026-10-24T13:08:44.615882-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -293584,6 +293584,34 @@
       "fecha": "2026-10-24",
       "hora": "12:25PM",
       "hora_scrapeo": "2026-10-24 12:37:54"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Real Tarde",
+      "img": "",
+      "numeros": [
+        "96",
+        "65",
+        "03"
+      ],
+      "fecha_original": "24 octubre",
+      "fecha": "2026-10-24",
+      "hora": "12:55PM",
+      "hora_scrapeo": "2026-10-24 13:08:44"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Tarde 1:00PM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "88",
+        "71",
+        "89"
+      ],
+      "fecha_original": "24 octubre",
+      "fecha": "2026-10-24",
+      "hora": "12:55PM",
+      "hora_scrapeo": "2026-10-24 13:08:44"
     }
   ]
 }
