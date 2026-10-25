@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-25T16:59:45.184703-04:00",
+  "generado": "2026-10-25T17:08:59.295286-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -294144,6 +294144,20 @@
       "fecha": "2026-10-25",
       "hora": "3:50PM",
       "hora_scrapeo": "2026-10-25 16:18:54"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Tarde 5PM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "97",
+        "97",
+        "74"
+      ],
+      "fecha_original": "25 octubre",
+      "fecha": "2026-10-25",
+      "hora": "4:55PM",
+      "hora_scrapeo": "2026-10-25 17:08:59"
     }
   ]
 }
