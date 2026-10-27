@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-27T14:29:25.134451-04:00",
+  "generado": "2026-10-27T14:44:45.226194-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -294998,6 +294998,20 @@
       "fecha": "2026-10-27",
       "hora": "1:55PM",
       "hora_scrapeo": "2026-10-27 14:19:09"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "New York Tarde",
+      "img": "https://www.tusnumerosrd.com/images/loterias/new_york.svg",
+      "numeros": [
+        "60",
+        "54",
+        "15"
+      ],
+      "fecha_original": "27 octubre",
+      "fecha": "2026-10-27",
+      "hora": "2:25PM",
+      "hora_scrapeo": "2026-10-27 14:44:45"
     }
   ]
 }
