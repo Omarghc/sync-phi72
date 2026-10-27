@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-27T13:30:25.811649-04:00",
+  "generado": "2026-10-27T13:39:17.676529-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -294956,6 +294956,20 @@
       "fecha": "2026-10-27",
       "hora": "12:55PM",
       "hora_scrapeo": "2026-10-27 13:09:17"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteka Tarde 1:30PM",
+      "img": "",
+      "numeros": [
+        "10",
+        "45",
+        "67"
+      ],
+      "fecha_original": "27 octubre",
+      "fecha": "2026-10-27",
+      "hora": "1:25PM",
+      "hora_scrapeo": "2026-10-27 13:39:17"
     }
   ]
 }
