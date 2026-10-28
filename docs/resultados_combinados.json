@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-28T12:39:01.480084-04:00",
+  "generado": "2026-10-28T12:49:22.379863-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -295376,6 +295376,34 @@
       "fecha": "2026-10-28",
       "hora": "11:55AM",
       "hora_scrapeo": "2026-10-28 12:18:01"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "La Suerte Medio Dia",
+      "img": "",
+      "numeros": [
+        "03",
+        "03",
+        "94"
+      ],
+      "fecha_original": "28 octubre",
+      "fecha": "2026-10-28",
+      "hora": "12:25PM",
+      "hora_scrapeo": "2026-10-28 12:49:22"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "King lottery Medio Dia",
+      "img": "",
+      "numeros": [
+        "43",
+        "97",
+        "89"
+      ],
+      "fecha_original": "28 octubre",
+      "fecha": "2026-10-28",
+      "hora": "12:25PM",
+      "hora_scrapeo": "2026-10-28 12:49:22"
     }
   ]
 }
