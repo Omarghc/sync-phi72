@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-29T18:58:18.671219-04:00",
+  "generado": "2026-10-29T19:08:21.771031-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -296048,6 +296048,34 @@
       "fecha": "2026-10-29",
       "hora": "5:55PM",
       "hora_scrapeo": "2026-10-29 18:08:35"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "La Primera Noche",
+      "img": "",
+      "numeros": [
+        "62",
+        "02",
+        "85"
+      ],
+      "fecha_original": "29 octubre",
+      "fecha": "2026-10-29",
+      "hora": "6:55PM",
+      "hora_scrapeo": "2026-10-29 19:08:21"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Noche 7PM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "02",
+        "24",
+        "98"
+      ],
+      "fecha_original": "29 octubre",
+      "fecha": "2026-10-29",
+      "hora": "6:55PM",
+      "hora_scrapeo": "2026-10-29 19:08:21"
     }
   ]
 }
