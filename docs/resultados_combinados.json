@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-30T13:38:48.878192-04:00",
+  "generado": "2026-10-30T13:48:06.275457-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -296398,6 +296398,20 @@
       "fecha": "2026-10-30",
       "hora": "1:25PM",
       "hora_scrapeo": "2026-10-30 13:38:48"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Florida Tarde",
+      "img": "https://www.tusnumerosrd.com/images/loterias/florida.svg",
+      "numeros": [
+        "81",
+        "58",
+        "10"
+      ],
+      "fecha_original": "30 octubre",
+      "fecha": "2026-10-30",
+      "hora": "1:25PM",
+      "hora_scrapeo": "2026-10-30 13:48:06"
     }
   ]
 }
