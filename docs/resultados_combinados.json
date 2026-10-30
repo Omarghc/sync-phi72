@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-29T20:07:14.479681-04:00",
+  "generado": "2026-10-29T20:18:28.023485-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -296132,6 +296132,20 @@
       "fecha": "2026-10-29",
       "hora": "7:55PM",
       "hora_scrapeo": "2026-10-29 20:07:14"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteka Noche",
+      "img": "",
+      "numeros": [
+        "12",
+        "81",
+        "56"
+      ],
+      "fecha_original": "29 octubre",
+      "fecha": "2026-10-29",
+      "hora": "7:55PM",
+      "hora_scrapeo": "2026-10-29 20:18:27"
     }
   ]
 }
