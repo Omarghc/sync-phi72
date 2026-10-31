@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-31T13:36:43.067480-04:00",
+  "generado": "2026-10-31T13:48:50.125119-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -296859,6 +296859,34 @@
       "fecha": "2026-10-31",
       "hora": "12:55PM",
       "hora_scrapeo": "2026-10-31 13:08:52"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteka Tarde 1:30PM",
+      "img": "",
+      "numeros": [
+        "40",
+        "58",
+        "56"
+      ],
+      "fecha_original": "31 octubre",
+      "fecha": "2026-10-31",
+      "hora": "1:25PM",
+      "hora_scrapeo": "2026-10-31 13:48:49"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Florida Tarde",
+      "img": "https://www.tusnumerosrd.com/images/loterias/florida.svg",
+      "numeros": [
+        "66",
+        "78",
+        "90"
+      ],
+      "fecha_original": "31 octubre",
+      "fecha": "2026-10-31",
+      "hora": "1:25PM",
+      "hora_scrapeo": "2026-10-31 13:48:49"
     }
   ]
 }
