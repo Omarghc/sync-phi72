@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-01T14:07:00.955422-04:00",
+  "generado": "2026-11-01T14:18:02.389174-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -297349,6 +297349,20 @@
       "fecha": "2026-11-01",
       "hora": "1:25PM",
       "hora_scrapeo": "2026-11-01 13:48:10"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Tarde 2PM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "83",
+        "11",
+        "32"
+      ],
+      "fecha_original": "01 noviembre",
+      "fecha": "2026-11-01",
+      "hora": "1:55PM",
+      "hora_scrapeo": "2026-11-01 14:18:02"
     }
   ]
 }
