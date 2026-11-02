@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-01T20:06:05.657967-04:00",
+  "generado": "2026-11-01T20:18:04.600241-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -297559,6 +297559,34 @@
       "fecha": "2026-11-01",
       "hora": "7:55PM",
       "hora_scrapeo": "2026-11-01 20:06:05"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Georgia Tarde 7pm",
+      "img": "",
+      "numeros": [
+        "30",
+        "80",
+        "44"
+      ],
+      "fecha_original": "01 noviembre",
+      "fecha": "2026-11-01",
+      "hora": "6:30PM",
+      "hora_scrapeo": "2026-11-01 20:18:04"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteka Noche",
+      "img": "",
+      "numeros": [
+        "22",
+        "74",
+        "06"
+      ],
+      "fecha_original": "01 noviembre",
+      "fecha": "2026-11-01",
+      "hora": "7:55PM",
+      "hora_scrapeo": "2026-11-01 20:18:04"
     }
   ]
 }
