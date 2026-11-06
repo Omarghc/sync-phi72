@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-06T14:58:14.897604-04:00",
+  "generado": "2026-11-06T15:08:25.235132-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -299699,6 +299699,20 @@
       "fecha": "2026-11-06",
       "hora": "2:25PM",
       "hora_scrapeo": "2026-11-06 14:58:14"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Nacional Tarde (gana mas)",
+      "img": "https://www.tusnumerosrd.com/images/loterias/nacional.svg",
+      "numeros": [
+        "06",
+        "29",
+        "97"
+      ],
+      "fecha_original": "06 noviembre",
+      "fecha": "2026-11-06",
+      "hora": "2:25PM",
+      "hora_scrapeo": "2026-11-06 15:08:25"
     }
   ]
 }
