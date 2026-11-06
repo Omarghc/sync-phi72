@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-05T20:08:26.744526-04:00",
+  "generado": "2026-11-05T20:17:18.898633-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -299405,6 +299405,20 @@
       "fecha": "2026-11-05",
       "hora": "7:55PM",
       "hora_scrapeo": "2026-11-05 20:08:26"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteka Noche",
+      "img": "",
+      "numeros": [
+        "98",
+        "40",
+        "77"
+      ],
+      "fecha_original": "05 noviembre",
+      "fecha": "2026-11-05",
+      "hora": "7:55PM",
+      "hora_scrapeo": "2026-11-05 20:17:18"
     }
   ]
 }
