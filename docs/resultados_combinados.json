@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-05T20:56:03.021753-04:00",
+  "generado": "2026-11-05T21:16:02.146083-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -299419,6 +299419,62 @@
       "fecha": "2026-11-05",
       "hora": "7:55PM",
       "hora_scrapeo": "2026-11-05 20:17:18"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Georgia Tarde 7pm",
+      "img": "",
+      "numeros": [
+        "36",
+        "99",
+        "14"
+      ],
+      "fecha_original": "05 noviembre",
+      "fecha": "2026-11-05",
+      "hora": "6:30PM",
+      "hora_scrapeo": "2026-11-05 21:16:01"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Noche 9:00PM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "21",
+        "28",
+        "30"
+      ],
+      "fecha_original": "05 noviembre",
+      "fecha": "2026-11-05",
+      "hora": "8:55PM",
+      "hora_scrapeo": "2026-11-05 21:16:01"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Leidsa Noche",
+      "img": "",
+      "numeros": [
+        "55",
+        "77",
+        "78"
+      ],
+      "fecha_original": "05 noviembre",
+      "fecha": "2026-11-05",
+      "hora": "8:50PM",
+      "hora_scrapeo": "2026-11-05 21:16:01"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Nacional Noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/nacional.svg",
+      "numeros": [
+        "75",
+        "73",
+        "81"
+      ],
+      "fecha_original": "05 noviembre",
+      "fecha": "2026-11-05",
+      "hora": "8:50PM",
+      "hora_scrapeo": "2026-11-05 21:16:01"
     }
   ]
 }
