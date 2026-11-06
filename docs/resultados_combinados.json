@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-06T12:38:25.018930-04:00",
+  "generado": "2026-11-06T12:47:15.506151-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -299601,6 +299601,20 @@
       "fecha": "2026-11-06",
       "hora": "11:55AM",
       "hora_scrapeo": "2026-11-06 12:26:12"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "La Suerte Medio Dia",
+      "img": "",
+      "numeros": [
+        "12",
+        "81",
+        "55"
+      ],
+      "fecha_original": "06 noviembre",
+      "fecha": "2026-11-06",
+      "hora": "12:25PM",
+      "hora_scrapeo": "2026-11-06 12:47:15"
     }
   ]
 }
