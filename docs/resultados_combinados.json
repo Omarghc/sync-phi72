@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-07T14:37:07.491041-04:00",
+  "generado": "2026-11-07T14:48:13.516430-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -300146,6 +300146,34 @@
       "fecha": "2026-11-07",
       "hora": "1:55PM",
       "hora_scrapeo": "2026-11-07 14:06:03"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Nacional Tarde (gana mas)",
+      "img": "https://www.tusnumerosrd.com/images/loterias/nacional.svg",
+      "numeros": [
+        "59",
+        "25",
+        "54"
+      ],
+      "fecha_original": "07 noviembre",
+      "fecha": "2026-11-07",
+      "hora": "2:25PM",
+      "hora_scrapeo": "2026-11-07 14:48:12"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Florida Tarde",
+      "img": "https://www.tusnumerosrd.com/images/loterias/florida.svg",
+      "numeros": [
+        "55",
+        "02",
+        "39"
+      ],
+      "fecha_original": "07 noviembre",
+      "fecha": "2026-11-07",
+      "hora": "2:25PM",
+      "hora_scrapeo": "2026-11-07 14:48:12"
     }
   ]
 }
