@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-07T21:09:32.890040-04:00",
+  "generado": "2026-11-07T21:18:15.595856-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -300384,6 +300384,20 @@
       "fecha": "2026-11-07",
       "hora": "8:50PM",
       "hora_scrapeo": "2026-11-07 21:09:32"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Nacional Noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/nacional.svg",
+      "numeros": [
+        "47",
+        "75",
+        "97"
+      ],
+      "fecha_original": "07 noviembre",
+      "fecha": "2026-11-07",
+      "hora": "8:50PM",
+      "hora_scrapeo": "2026-11-07 21:18:15"
     }
   ]
 }
