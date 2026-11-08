@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-08T13:07:30.033083-04:00",
+  "generado": "2026-11-08T13:16:09.628182-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -300566,6 +300566,20 @@
       "fecha": "2026-11-08",
       "hora": "12:25PM",
       "hora_scrapeo": "2026-11-08 13:07:29"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Real Tarde",
+      "img": "",
+      "numeros": [
+        "59",
+        "08",
+        "17"
+      ],
+      "fecha_original": "08 noviembre",
+      "fecha": "2026-11-08",
+      "hora": "12:55PM",
+      "hora_scrapeo": "2026-11-08 13:16:09"
     }
   ]
 }
