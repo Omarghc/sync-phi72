@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-10T19:06:12.201781-04:00",
+  "generado": "2026-11-10T19:17:51.250656-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -301656,6 +301656,20 @@
       "fecha": "2026-11-10",
       "hora": "6:55PM",
       "hora_scrapeo": "2026-11-10 19:06:12"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "La Primera Noche",
+      "img": "",
+      "numeros": [
+        "12",
+        "64",
+        "46"
+      ],
+      "fecha_original": "10 noviembre",
+      "fecha": "2026-11-10",
+      "hora": "6:55PM",
+      "hora_scrapeo": "2026-11-10 19:17:50"
     }
   ]
 }
