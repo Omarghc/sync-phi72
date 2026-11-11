@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-11T13:27:02.206260-04:00",
+  "generado": "2026-11-11T13:37:42.915004-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -301950,6 +301950,20 @@
       "fecha": "2026-11-11",
       "hora": "12:55PM",
       "hora_scrapeo": "2026-11-11 13:17:42"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteka Tarde 1:30PM",
+      "img": "",
+      "numeros": [
+        "10",
+        "74",
+        "48"
+      ],
+      "fecha_original": "11 noviembre",
+      "fecha": "2026-11-11",
+      "hora": "1:25PM",
+      "hora_scrapeo": "2026-11-11 13:37:42"
     }
   ]
 }
