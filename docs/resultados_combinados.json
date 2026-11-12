@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-12T14:36:51.224393-04:00",
+  "generado": "2026-11-12T14:47:21.087938-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -302426,6 +302426,20 @@
       "fecha": "2026-11-12",
       "hora": "1:55PM",
       "hora_scrapeo": "2026-11-12 14:08:51"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Florida Tarde",
+      "img": "https://www.tusnumerosrd.com/images/loterias/florida.svg",
+      "numeros": [
+        "54",
+        "22",
+        "34"
+      ],
+      "fecha_original": "12 noviembre",
+      "fecha": "2026-11-12",
+      "hora": "2:25PM",
+      "hora_scrapeo": "2026-11-12 14:47:20"
     }
   ]
 }
