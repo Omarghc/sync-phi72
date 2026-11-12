@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-12T18:07:31.773553-04:00",
+  "generado": "2026-11-12T18:19:51.998666-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -302524,6 +302524,20 @@
       "fecha": "2026-11-12",
       "hora": "5:55PM",
       "hora_scrapeo": "2026-11-12 18:07:31"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "La Suerte noche",
+      "img": "",
+      "numeros": [
+        "72",
+        "55",
+        "20"
+      ],
+      "fecha_original": "12 noviembre",
+      "fecha": "2026-11-12",
+      "hora": "5:50PM",
+      "hora_scrapeo": "2026-11-12 18:19:51"
     }
   ]
 }
