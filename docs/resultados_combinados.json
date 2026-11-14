@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-13T19:57:49.119577-04:00",
+  "generado": "2026-11-13T20:08:53.733119-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -303042,6 +303042,62 @@
       "fecha": "2026-11-13",
       "hora": "7:25PM",
       "hora_scrapeo": "2026-11-13 19:38:47"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteka Noche",
+      "img": "",
+      "numeros": [
+        "72",
+        "71",
+        "75"
+      ],
+      "fecha_original": "13 noviembre",
+      "fecha": "2026-11-13",
+      "hora": "7:55PM",
+      "hora_scrapeo": "2026-11-13 20:08:53"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Georgia Tarde 7pm",
+      "img": "",
+      "numeros": [
+        "89",
+        "35",
+        "97"
+      ],
+      "fecha_original": "13 noviembre",
+      "fecha": "2026-11-13",
+      "hora": "6:30PM",
+      "hora_scrapeo": "2026-11-13 20:08:53"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Real Noche 8PM",
+      "img": "",
+      "numeros": [
+        "56",
+        "92",
+        "59"
+      ],
+      "fecha_original": "13 noviembre",
+      "fecha": "2026-11-13",
+      "hora": "7:55PM",
+      "hora_scrapeo": "2026-11-13 20:08:53"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Noche 8PM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "50",
+        "37",
+        "46"
+      ],
+      "fecha_original": "13 noviembre",
+      "fecha": "2026-11-13",
+      "hora": "7:55PM",
+      "hora_scrapeo": "2026-11-13 20:08:53"
     }
   ]
 }
