@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-14T19:47:58.531904-04:00",
+  "generado": "2026-11-14T19:57:51.252280-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -303489,6 +303489,20 @@
       "fecha": "2026-11-14",
       "hora": "6:55PM",
       "hora_scrapeo": "2026-11-14 19:08:00"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "King lottery Noche",
+      "img": "",
+      "numeros": [
+        "31",
+        "05",
+        "30"
+      ],
+      "fecha_original": "14 noviembre",
+      "fecha": "2026-11-14",
+      "hora": "7:25PM",
+      "hora_scrapeo": "2026-11-14 19:57:51"
     }
   ]
 }
