@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-13T20:58:38.169377-04:00",
+  "generado": "2026-11-13T21:07:39.523137-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -303098,6 +303098,48 @@
       "fecha": "2026-11-13",
       "hora": "7:55PM",
       "hora_scrapeo": "2026-11-13 20:08:53"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Nacional Noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/nacional.svg",
+      "numeros": [
+        "39",
+        "87",
+        "26"
+      ],
+      "fecha_original": "13 noviembre",
+      "fecha": "2026-11-13",
+      "hora": "8:50PM",
+      "hora_scrapeo": "2026-11-13 21:07:39"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Noche 9:00PM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "45",
+        "84",
+        "45"
+      ],
+      "fecha_original": "13 noviembre",
+      "fecha": "2026-11-13",
+      "hora": "8:55PM",
+      "hora_scrapeo": "2026-11-13 21:07:39"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Leidsa Noche",
+      "img": "",
+      "numeros": [
+        "27",
+        "45",
+        "12"
+      ],
+      "fecha_original": "13 noviembre",
+      "fecha": "2026-11-13",
+      "hora": "8:50PM",
+      "hora_scrapeo": "2026-11-13 21:07:39"
     }
   ]
 }
