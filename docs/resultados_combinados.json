@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-15T20:06:34.479385-04:00",
+  "generado": "2026-11-15T20:18:11.462589-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -304021,6 +304021,20 @@
       "fecha": "2026-11-15",
       "hora": "7:55PM",
       "hora_scrapeo": "2026-11-15 20:06:34"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Georgia Tarde 7pm",
+      "img": "",
+      "numeros": [
+        "71",
+        "93",
+        "72"
+      ],
+      "fecha_original": "15 noviembre",
+      "fecha": "2026-11-15",
+      "hora": "6:30PM",
+      "hora_scrapeo": "2026-11-15 20:18:11"
     }
   ]
 }
