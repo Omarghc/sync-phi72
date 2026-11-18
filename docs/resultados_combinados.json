@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-18T12:57:34.249582-04:00",
+  "generado": "2026-11-18T13:12:08.177221-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -305155,6 +305155,34 @@
       "fecha": "2026-11-18",
       "hora": "12:25PM",
       "hora_scrapeo": "2026-11-18 12:49:41"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Tarde 1:00PM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "28",
+        "14",
+        "99"
+      ],
+      "fecha_original": "18 noviembre",
+      "fecha": "2026-11-18",
+      "hora": "12:55PM",
+      "hora_scrapeo": "2026-11-18 13:12:08"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Real Tarde",
+      "img": "",
+      "numeros": [
+        "58",
+        "76",
+        "30"
+      ],
+      "fecha_original": "18 noviembre",
+      "fecha": "2026-11-18",
+      "hora": "12:55PM",
+      "hora_scrapeo": "2026-11-18 13:12:08"
     }
   ]
 }
