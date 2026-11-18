@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-18T11:58:51.689723-04:00",
+  "generado": "2026-11-18T12:06:16.996631-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -305085,6 +305085,20 @@
       "fecha": "2026-11-18",
       "hora": "10:55AM",
       "hora_scrapeo": "2026-11-18 11:08:45"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Anguila Medio Dia 12PM",
+      "img": "https://www.tusnumerosrd.com/images/loterias/anguila.svg",
+      "numeros": [
+        "36",
+        "54",
+        "88"
+      ],
+      "fecha_original": "18 noviembre",
+      "fecha": "2026-11-18",
+      "hora": "11:55AM",
+      "hora_scrapeo": "2026-11-18 12:06:16"
     }
   ]
 }
