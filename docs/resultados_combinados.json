@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-21T12:08:03.303946-04:00",
+  "generado": "2026-11-21T12:18:44.987319-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -306483,6 +306483,34 @@
       "fecha": "2026-11-21",
       "hora": "11:55AM",
       "hora_scrapeo": "2026-11-21 12:08:03"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "La Primera Tarde",
+      "img": "",
+      "numeros": [
+        "03",
+        "59",
+        "26"
+      ],
+      "fecha_original": "21 noviembre",
+      "fecha": "2026-11-21",
+      "hora": "11:55AM",
+      "hora_scrapeo": "2026-11-21 12:18:44"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Lotedom",
+      "img": "",
+      "numeros": [
+        "47",
+        "91",
+        "76"
+      ],
+      "fecha_original": "21 noviembre",
+      "fecha": "2026-11-21",
+      "hora": "11:55AM",
+      "hora_scrapeo": "2026-11-21 12:18:44"
     }
   ]
 }
