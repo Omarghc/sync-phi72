@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-21T20:58:52.974196-04:00",
+  "generado": "2026-11-21T21:08:12.133550-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -306805,6 +306805,34 @@
       "fecha": "2026-11-21",
       "hora": "7:55PM",
       "hora_scrapeo": "2026-11-21 20:08:46"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Nacional Noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/nacional.svg",
+      "numeros": [
+        "78",
+        "97",
+        "46"
+      ],
+      "fecha_original": "21 noviembre",
+      "fecha": "2026-11-21",
+      "hora": "8:50PM",
+      "hora_scrapeo": "2026-11-21 21:08:11"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Leidsa Noche",
+      "img": "",
+      "numeros": [
+        "92",
+        "32",
+        "42"
+      ],
+      "fecha_original": "21 noviembre",
+      "fecha": "2026-11-21",
+      "hora": "8:50PM",
+      "hora_scrapeo": "2026-11-21 21:08:11"
     }
   ]
 }
