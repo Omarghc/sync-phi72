@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-22T18:07:47.173951-04:00",
+  "generado": "2026-11-22T18:17:34.649084-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -307168,6 +307168,20 @@
       "fecha": "2026-11-22",
       "hora": "5:55PM",
       "hora_scrapeo": "2026-11-22 18:07:47"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Nacional Noche",
+      "img": "https://www.tusnumerosrd.com/images/loterias/nacional.svg",
+      "numeros": [
+        "46",
+        "42",
+        "94"
+      ],
+      "fecha_original": "22 noviembre",
+      "fecha": "2026-11-22",
+      "hora": "5:50PM",
+      "hora_scrapeo": "2026-11-22 18:17:34"
     }
   ]
 }
