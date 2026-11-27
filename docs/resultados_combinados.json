@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-27T13:08:33.716299-04:00",
+  "generado": "2026-11-27T13:18:34.563103-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -309322,6 +309322,20 @@
       "fecha": "2026-11-27",
       "hora": "12:55PM",
       "hora_scrapeo": "2026-11-27 13:08:33"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "Loteria Real Tarde",
+      "img": "",
+      "numeros": [
+        "28",
+        "23",
+        "27"
+      ],
+      "fecha_original": "27 noviembre",
+      "fecha": "2026-11-27",
+      "hora": "12:55PM",
+      "hora_scrapeo": "2026-11-27 13:18:34"
     }
   ]
 }
