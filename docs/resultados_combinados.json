@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-28T12:25:56.049562-04:00",
+  "generado": "2026-11-28T12:37:24.816622-04:00",
   "resultados": [
     {
       "fuente": "tusnumerosrd.com",
@@ -309742,6 +309742,20 @@
       "fecha": "2026-11-28",
       "hora": "11:55AM",
       "hora_scrapeo": "2026-11-28 12:08:45"
+    },
+    {
+      "fuente": "tusnumerosrd.com",
+      "loteria": "King lottery Medio Dia",
+      "img": "",
+      "numeros": [
+        "09",
+        "76",
+        "81"
+      ],
+      "fecha_original": "28 noviembre",
+      "fecha": "2026-11-28",
+      "hora": "12:25PM",
+      "hora_scrapeo": "2026-11-28 12:37:24"
     }
   ]
 }
